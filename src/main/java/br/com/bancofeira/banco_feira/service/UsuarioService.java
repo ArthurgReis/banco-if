@@ -1,25 +1,31 @@
 package br.com.bancofeira.banco_feira.service;
 
+import java.util.Set;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.bancofeira.banco_feira.model.Role;
 import br.com.bancofeira.banco_feira.model.SolicitacaoAcessoEmpresa;
 import br.com.bancofeira.banco_feira.model.StatusSolicitacao;
 import br.com.bancofeira.banco_feira.model.Usuario;
+import br.com.bancofeira.banco_feira.repository.RoleRepository;
 import br.com.bancofeira.banco_feira.repository.SolicitacaoAcessoEmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
+    private final RoleRepository roleRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final SolicitacaoAcessoEmpresaRepository solicitacaoRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, SolicitacaoAcessoEmpresaRepository solicitacaoRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, SolicitacaoAcessoEmpresaRepository solicitacaoRepository, RoleRepository roleRepository) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.solicitacaoRepository = solicitacaoRepository;
+        this.roleRepository = roleRepository;
     }
 
     public Usuario criarUsuario(Usuario usuario){
@@ -28,6 +34,10 @@ public class UsuarioService {
         }
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(senhaCriptografada);
+
+        Role clientRole = roleRepository.findByNome("ROLE_CLIENTE")
+                .orElseThrow(() -> new RuntimeException("Role 'ROLE_CLIENTE' não encontrada."));
+            usuario.setRoles(Set.of(clientRole));
         
         return usuarioRepository.save(usuario);
     }

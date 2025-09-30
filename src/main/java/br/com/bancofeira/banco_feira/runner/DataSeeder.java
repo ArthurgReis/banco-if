@@ -56,7 +56,7 @@ public class DataSeeder implements CommandLineRunner {
             Usuario admin = new Usuario();
             admin.setNome("Administrador");
             admin.setEmail("admin@bancofeira.com");
-            admin.setCpf("00000000000"); 
+            admin.setCpf("11144477735"); 
             admin.setSenha(passwordEncoder.encode("admin123")); 
             admin.setCreditos(BigDecimal.valueOf(999999));
             admin.setRoles(Set.of(adminRole, clientRole)); 

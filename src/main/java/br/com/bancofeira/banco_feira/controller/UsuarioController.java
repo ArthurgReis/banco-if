@@ -1,6 +1,7 @@
 package br.com.bancofeira.banco_feira.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
 import br.com.bancofeira.banco_feira.model.SolicitacaoAcessoEmpresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.service.UsuarioService;
@@ -25,24 +27,40 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    private UsuarioResponseDto toDto(Usuario usuario) {
+        UsuarioResponseDto dto = new UsuarioResponseDto();
+        dto.setId(usuario.getId());
+        dto.setNome(usuario.getNome());
+        dto.setEmail(usuario.getEmail());
+        dto.setCpf(usuario.getCpf());
+        dto.setCreditos(usuario.getCreditos());
+        dto.setRoles(usuario.getRoles());
+        return dto;
+    }
+
+
     @PostMapping
-    public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario){
+    public ResponseEntity<UsuarioResponseDto> criarUsuario(@RequestBody Usuario usuario){
         Usuario novoUsuario = usuarioService.criarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(novoUsuario));
 
 
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarTodos(){
-        List<Usuario> usuarios = usuarioService.listarTodos();
-        return ResponseEntity.ok(usuarios);
+    public ResponseEntity<List<UsuarioResponseDto>> listarTodos(){
+        List<Usuario> usuariosEntidades = usuarioService.listarTodos();
+
+        List<UsuarioResponseDto> usuariosDto = usuariosEntidades.stream()
+            .map(this::toDto)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(usuariosDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Integer id){
+    public ResponseEntity<UsuarioResponseDto> buscarPorId(@PathVariable Integer id){
         Usuario usuario = usuarioService.buscarPorId(id);
-        return ResponseEntity.ok(usuario);
+        return ResponseEntity.ok(toDto(usuario));
     }
 
     @PostMapping("/{id}/solicitar-acesso-empresa")
