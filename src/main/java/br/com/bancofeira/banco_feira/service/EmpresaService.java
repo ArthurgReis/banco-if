@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.bancofeira.banco_feira.model.Empresa;
-import br.com.bancofeira.banco_feira.model.Role;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.RoleRepository;
@@ -29,21 +28,16 @@ public class EmpresaService {
         Usuario dono = usuarioRepository.findById(usuarioDonoId)
                 .orElseThrow(() -> new RuntimeException("Usuário (dono) não encontrado!"));
 
- 
-        Role roleEmpresa = roleRepository.findByNome("ROLE_EMPRESA")
-                .orElseThrow(() -> new RuntimeException("Role 'ROLE_EMPRESA' não encontrada."));
-        Role roleCliente = roleRepository.findByNome("ROLE_CLIENTE")
-                .orElseThrow(() -> new RuntimeException("Role 'ROLE_CLIENTE' não encontrada."));
+        boolean temPermissao = dono.getRoles().stream()
+            .anyMatch(role -> role.getNome().equals("ROLE_EMPRESA"));
 
-   
-        dono.getRoles().add(roleEmpresa);
-        dono.getRoles().add(roleCliente);
-        
-  
+        if(!temPermissao){
+            throw new IllegalStateException("Este usuário não tem permissão para criar uma empresa");
+        }
+ 
         Empresa novaEmpresa = empresaRepository.save(empresa);
 
         dono.getEmpresas().add(novaEmpresa);
-
         usuarioRepository.save(dono);
 
         return novaEmpresa;

@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
+import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.SolicitacaoAcessoEmpresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.service.UsuarioService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -40,12 +42,13 @@ public class UsuarioController {
 
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDto> criarUsuario(@RequestBody Usuario usuario){
+    public ResponseEntity<ApiResponse<UsuarioResponseDto>> criarUsuario(@RequestBody @Valid Usuario usuario) {
         Usuario novoUsuario = usuarioService.criarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toDto(novoUsuario));
+        UsuarioResponseDto usuarioDto = toDto(novoUsuario);
+        ApiResponse<UsuarioResponseDto> resposta = new ApiResponse<>(true, "Usuário criado com sucesso!", usuarioDto);
 
-
-    }
+        return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
+}
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDto>> listarTodos(){
