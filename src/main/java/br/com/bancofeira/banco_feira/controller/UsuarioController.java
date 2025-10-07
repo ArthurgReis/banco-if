@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
-import br.com.bancofeira.banco_feira.model.SolicitacaoAcessoEmpresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -35,7 +34,6 @@ public class UsuarioController {
         dto.setNome(usuario.getNome());
         dto.setEmail(usuario.getEmail());
         dto.setCpf(usuario.getCpf());
-        dto.setCreditos(usuario.getCreditos());
         dto.setRoles(usuario.getRoles());
         return dto;
     }
@@ -64,12 +62,6 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDto> buscarPorId(@PathVariable Integer id){
         Usuario usuario = usuarioService.buscarPorId(id);
         return ResponseEntity.ok(toDto(usuario));
-    }
-
-    @PostMapping("/{id}/solicitar-acesso-empresa")
-    public ResponseEntity<SolicitacaoAcessoEmpresa> solicitarAcessoEmpresa(@PathVariable Integer id) {
-        SolicitacaoAcessoEmpresa solicitacao = usuarioService.solicitarAcessoEmpresa(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(solicitacao);
     }
 
 

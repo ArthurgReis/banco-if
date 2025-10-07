@@ -1,6 +1,5 @@
 package br.com.bancofeira.banco_feira.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
@@ -58,9 +57,6 @@ public class Usuario implements UserDetails{
     @Column(nullable = false)
     private String senha;
 
-    @Column(nullable = false)
-    private BigDecimal creditos = BigDecimal.ZERO;
-
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
@@ -86,11 +82,9 @@ public class Usuario implements UserDetails{
         this.dataCadastro = LocalDateTime.now();
     }
 
-    // --- MÉTODOS OBRIGATÓRIOS DO USERDETAILS ---
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Pega nossa lista de 'Roles' e a transforma no formato que o Spring Security entende.
         return this.roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getNome()))
                 .collect(Collectors.toList());
@@ -98,37 +92,32 @@ public class Usuario implements UserDetails{
 
     @Override
     public String getPassword() {
-        // Informa ao Spring Security qual campo contém a senha.
         return this.senha;
     }
 
     @Override
     public String getUsername() {
-        // Informa ao Spring Security qual campo serve como "username" (no nosso caso, o e-mail).
         return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        // Retorna 'true' para indicar que a conta não expira.
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // Retorna 'true' para indicar que a conta não está bloqueada.
         return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // Retorna 'true' para indicar que as credenciais (senha) não expiram.
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-        // Retorna 'true' para indicar que a conta está habilitada.
+
         return true;
     }
 

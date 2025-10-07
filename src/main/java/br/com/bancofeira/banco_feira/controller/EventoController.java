@@ -8,25 +8,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.bancofeira.banco_feira.model.Evento;
-import br.com.bancofeira.banco_feira.service.AdminService;
+import br.com.bancofeira.banco_feira.service.EventoService;
 
 @RestController
-@RequestMapping("/api/admin")
-public class AdminController {
-    
-    private final AdminService adminService;
+@RequestMapping("/api/eventos")
+public class EventoController {
 
-    public AdminController(AdminService adminService){
-        this.adminService = adminService;
+    private final EventoService eventoService;
+
+    public EventoController(EventoService eventoService) {
+        this.eventoService = eventoService;
     }
 
-    @PostMapping("/eventos")
+    @PostMapping
     public ResponseEntity<Evento> criarEvento(@RequestBody Evento evento) {
-        Evento novoEvento = adminService.criarEvento(evento);
+        Evento novoEvento = eventoService.criarEvento(evento);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoEvento);
     }
-
-    
-
-
 }
