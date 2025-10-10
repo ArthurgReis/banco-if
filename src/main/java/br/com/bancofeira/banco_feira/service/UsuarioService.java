@@ -4,14 +4,10 @@ import java.util.Set;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.bancofeira.banco_feira.model.Role;
-import br.com.bancofeira.banco_feira.model.SolicitacaoAcessoEmpresa;
-import br.com.bancofeira.banco_feira.model.StatusSolicitacao;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.repository.RoleRepository;
-import br.com.bancofeira.banco_feira.repository.SolicitacaoAcessoEmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 
 @Service
@@ -19,12 +15,10 @@ public class UsuarioService {
     private final RoleRepository roleRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SolicitacaoAcessoEmpresaRepository solicitacaoRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, SolicitacaoAcessoEmpresaRepository solicitacaoRepository, RoleRepository roleRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
-        this.solicitacaoRepository = solicitacaoRepository;
         this.roleRepository = roleRepository;
     }
 
@@ -52,27 +46,6 @@ public class UsuarioService {
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
     }
 
-    @Transactional
-    public SolicitacaoAcessoEmpresa solicitarAcessoEmpresa(Integer usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
 
-        boolean jaPossuiRoleEmpresa = usuario.getRoles().stream()
-                .anyMatch(role -> role.getNome().equals("ROLE_EMPRESA"));
-        if (jaPossuiRoleEmpresa) {
-            throw new IllegalStateException("Usuário já possui permissão de empresa.");
-        }
-
-        solicitacaoRepository.findByUsuarioIdAndStatus(usuarioId, StatusSolicitacao.PENDENTE)
-                .ifPresent(s -> {
-                    throw new IllegalStateException("Usuário já possui uma solicitação pendente.");
-                });
-
-        SolicitacaoAcessoEmpresa novaSolicitacao = new SolicitacaoAcessoEmpresa();
-        novaSolicitacao.setUsuario(usuario);
-        novaSolicitacao.setStatus(StatusSolicitacao.PENDENTE);
-
-        return solicitacaoRepository.save(novaSolicitacao);
-    }
     
 }

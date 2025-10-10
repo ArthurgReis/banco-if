@@ -6,31 +6,19 @@ import org.springframework.stereotype.Service;
 
 import br.com.bancofeira.banco_feira.model.Evento;
 import br.com.bancofeira.banco_feira.repository.EventoRepository;
-import br.com.bancofeira.banco_feira.repository.RoleRepository;
-import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
-import jakarta.transaction.Transactional;
 
 @Service
-public class AdminService {
+public class EventoService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final RoleRepository roleRepository;
     private final EventoRepository eventoRepository;
 
-    public AdminService(UsuarioRepository usuarioRepository, RoleRepository roleRepository, EventoRepository eventoRepository) {
-        this.usuarioRepository = usuarioRepository;
-        this.roleRepository = roleRepository;
+    public EventoService(EventoRepository eventoRepository) {
         this.eventoRepository = eventoRepository;
     }
 
-    @Transactional
     public Evento criarEvento(Evento evento) {
-        
         String chave = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         evento.setChaveInscricao(chave);
         return eventoRepository.save(evento);
     }
-
- 
- 
 }
