@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +33,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "usuarios")
-public class Usuario implements UserDetails{
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +53,7 @@ public class Usuario implements UserDetails{
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) 
     @NotBlank(message = "A senha não pode estar em branco.")
     @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres.")
     @Column(nullable = false)
@@ -60,7 +62,7 @@ public class Usuario implements UserDetails{
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "usuario_empresas",
         joinColumns = @JoinColumn(name = "usuario_id"),
@@ -81,7 +83,6 @@ public class Usuario implements UserDetails{
     protected void onCreate() {
         this.dataCadastro = LocalDateTime.now();
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -117,8 +118,6 @@ public class Usuario implements UserDetails{
 
     @Override
     public boolean isEnabled() {
-
         return true;
     }
-
 }
