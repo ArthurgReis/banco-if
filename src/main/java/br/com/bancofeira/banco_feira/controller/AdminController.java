@@ -1,32 +1,18 @@
 package br.com.bancofeira.banco_feira.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.bancofeira.banco_feira.model.Evento;
 import br.com.bancofeira.banco_feira.service.AdminService;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin") 
 public class AdminController {
-    
+
     private final AdminService adminService;
 
-    public AdminController(AdminService adminService){
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
-
-    @PostMapping("/eventos")
-    public ResponseEntity<Evento> criarEvento(@RequestBody Evento evento) {
-        Evento novoEvento = adminService.criarEvento(evento);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoEvento);
-    }
-
-    
-
 
 }
