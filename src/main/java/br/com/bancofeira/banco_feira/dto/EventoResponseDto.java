@@ -11,6 +11,7 @@ public class EventoResponseDto {
     private String nome;
     private LocalDate dataRealizacao;
     private BigDecimal creditoInicialCliente;
+    private String chaveInscricao;
 
     public static EventoResponseDto fromEntity(br.com.bancofeira.banco_feira.model.Evento evento) {
         EventoResponseDto dto = new EventoResponseDto();
@@ -18,6 +19,7 @@ public class EventoResponseDto {
         dto.setNome(evento.getNome());
         dto.setDataRealizacao(evento.getDataRealizacao());
         dto.setCreditoInicialCliente(evento.getCreditoInicialCliente());
+        dto.setChaveInscricao(evento.getChaveInscricao());
         return dto;
     }
 }
