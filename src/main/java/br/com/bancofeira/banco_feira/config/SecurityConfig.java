@@ -2,9 +2,11 @@ package br.com.bancofeira.banco_feira.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,17 +23,22 @@ import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
+   @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                  AuthenticationProvider authenticationProvider,
                                                  JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
+            .cors(withDefaults()) 
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**", "/api/usuarios", "/api/empresas/*/produtos").permitAll()
-            .anyRequest().authenticated()
-)
+                .requestMatchers(
+                    "/api/auth/**",
+                    "/api/usuarios"
+                ).permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                .anyRequest().authenticated()
+            )
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
