@@ -1,14 +1,18 @@
 package br.com.bancofeira.banco_feira.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import br.com.bancofeira.banco_feira.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,13 +25,18 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(Usuario usuario) { 
+        List<String> roles = usuario.getAuthorities().stream()
+                                  .map(GrantedAuthority::getAuthority)
+                                  .collect(Collectors.toList());
+
         return Jwts.builder()
-            .subject(userDetails.getUsername())
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + 1000*60*60))
-            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-            .compact();
+                .subject(usuario.getUsername()) 
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) 
+                .claim("roles", roles)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
         private Claims extractAllClaims(String token){
