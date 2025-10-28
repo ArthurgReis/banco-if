@@ -37,6 +37,7 @@ public class SecurityConfig {
                     "/api/usuarios"
                 ).permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                .requestMatchers("/api/eventos/**","/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider)
