@@ -62,12 +62,13 @@ public class Usuario implements UserDetails {
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER) 
     @JoinTable(
         name = "usuario_empresas",
         joinColumns = @JoinColumn(name = "usuario_id"),
         inverseJoinColumns = @JoinColumn(name = "empresa_id")
     )
+
     @JsonIgnoreProperties("funcionarios")
     private Set<Empresa> empresas = new HashSet<>();
 
