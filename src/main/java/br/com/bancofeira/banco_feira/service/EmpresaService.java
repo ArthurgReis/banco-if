@@ -1,55 +1,63 @@
 package br.com.bancofeira.banco_feira.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import br.com.bancofeira.banco_feira.dto.InscricaoEmpresaDto;
+import br.com.bancofeira.banco_feira.dto.EmpresaCreateDto;
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
-import br.com.bancofeira.banco_feira.model.Empresa;
-import br.com.bancofeira.banco_feira.model.Evento;
-import br.com.bancofeira.banco_feira.model.Role;
-import br.com.bancofeira.banco_feira.model.StatusEmpresa;
-import br.com.bancofeira.banco_feira.model.Usuario;
+import br.com.bancofeira.banco_feira.model.*;
 import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.EventoRepository;
 import br.com.bancofeira.banco_feira.repository.RoleRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EmpresaService {
 
+    // Contém apenas os repositórios que ELA precisa
     private final EmpresaRepository empresaRepository;
+    private final EventoRepository eventoRepository;
     private final UsuarioRepository usuarioRepository;
     private final RoleRepository roleRepository;
-    private final EventoRepository eventoRepository;
 
-    public EmpresaService(EmpresaRepository empresaRepository, UsuarioRepository usuarioRepository, RoleRepository roleRepository, EventoRepository eventoRepository) {
+    public EmpresaService(EmpresaRepository empresaRepository,
+                          EventoRepository eventoRepository,
+                          UsuarioRepository usuarioRepository,
+                          RoleRepository roleRepository) {
         this.empresaRepository = empresaRepository;
+        this.eventoRepository = eventoRepository;
         this.usuarioRepository = usuarioRepository;
         this.roleRepository = roleRepository;
-        this.eventoRepository = eventoRepository;
     }
 
     @Transactional
-    public Empresa inscreverEmpresa(InscricaoEmpresaDto inscricaoDto, Usuario dono) {
-        Evento evento = eventoRepository.findByChaveInscricao(inscricaoDto.getChaveInscricao())
-                .orElseThrow(() -> new ResourceNotFoundException("Chave de inscrição inválida ou evento não encontrado!"));
+    public Empresa criarEmpresa(EmpresaCreateDto dto, Usuario dono) {
+        // 1. Valida a chave
+        Evento evento = eventoRepository.findByChaveEmpresa(dto.getChaveEmpresa())
+                .orElseThrow(() -> new ResourceNotFoundException("Chave de inscrição de empresa inválida!"));
 
+        // 2. Concede papéis
         Role roleEmpresa = roleRepository.findByNome("ROLE_EMPRESA")
-                .orElseThrow(() -> new RuntimeException("Role 'ROLE_EMPRESA' não encontrada."));
+                .orElseThrow(() -> new RuntimeException("Configuração crítica: ROLE_EMPRESA não encontrado."));
+        Role roleCliente = roleRepository.findByNome("ROLE_CLIENTE")
+                .orElseThrow(() -> new RuntimeException("Configuração crítica: ROLE_CLIENTE não encontrado."));
         dono.getRoles().add(roleEmpresa);
+        dono.getRoles().add(roleCliente);
 
+        // 3. Cria a empresa
         Empresa novaEmpresa = new Empresa();
-        novaEmpresa.setNomeFantasia(inscricaoDto.getNomeFantasia());
-        novaEmpresa.setDescricaoCurta(inscricaoDto.getDescricaoCurta());
-        novaEmpresa.setStatus(StatusEmpresa.APROVADO); 
-        novaEmpresa.setEvento(evento); 
+        novaEmpresa.setNomeFantasia(dto.getNomeFantasia());
+        novaEmpresa.setDescricaoCurta(dto.getDescricaoCurta());
+        novaEmpresa.setStatus(StatusEmpresa.APROVADO);
+        novaEmpresa.setEvento(evento);
 
         empresaRepository.save(novaEmpresa);
 
+        // 4. Vincula dono e salva
         dono.getEmpresas().add(novaEmpresa);
         usuarioRepository.save(dono);
 
         return novaEmpresa;
     }
+
+    // NENHUM MÉTODO DE PRODUTO DEVE ESTAR AQUI!
 }

@@ -1,16 +1,14 @@
 package br.com.bancofeira.banco_feira.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
 import br.com.bancofeira.banco_feira.model.Empresa;
 import br.com.bancofeira.banco_feira.model.Produto;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.ProdutoRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class ProdutoService {
@@ -23,35 +21,40 @@ public class ProdutoService {
         this.empresaRepository = empresaRepository;
     }
 
+    /**
+     * Valida se o usuário logado tem permissão para gerenciar a empresa alvo.
+     */
+    private void validarPermissao(Empresa empresa, Usuario usuarioLogado) {
+        boolean temPermissao = usuarioLogado.getEmpresas().stream()
+                .anyMatch(emp -> emp.getId().equals(empresa.getId()));
+
+        if (!temPermissao) {
+            // Esta exceção será capturada pelo RestExceptionHandler
+            throw new IllegalStateException("Acesso negado. Você não tem permissão para gerenciar esta empresa.");
+        }
+    }
+
+    @Transactional
     public Produto criarProduto(Produto produto, Integer empresaId, Usuario usuarioLogado) {
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
 
+        // Valida se o usuário logado é o dono
         validarPermissao(empresa, usuarioLogado);
 
         produto.setEmpresa(empresa);
         return produtoRepository.save(produto);
     }
 
-    private void validarPermissao(Empresa empresa, Usuario usuarioLogado) {
-        boolean temPermissao = usuarioLogado.getEmpresas().stream()
-                .anyMatch(emp -> emp.getId().equals(empresa.getId()));
-
-        if (!temPermissao) {
-            throw new IllegalStateException("Acesso negado. Você não tem permissão para gerenciar produtos desta empresa.");
-        }
-    }
-
     public List<Produto> listarProdutosPorEmpresa(Integer empresaId) {
         if (!empresaRepository.existsById(empresaId)) {
             throw new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId);
         }
-                return produtoRepository.findByEmpresaId(empresaId);
+        return produtoRepository.findByEmpresaId(empresaId);
     }
 
     @Transactional
     public Produto atualizarProduto(Integer empresaId, Integer produtoId, Produto dadosProduto, Usuario usuarioLogado) {
-
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
 
@@ -61,7 +64,7 @@ public class ProdutoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoId));
 
         if (!produto.getEmpresa().getId().equals(empresa.getId())) {
-            throw new IllegalStateException("Conflito de dados: Este produto não pertence à empresa informada.");
+            throw new IllegalStateException("Conflito: Este produto não pertence à empresa informada.");
         }
 
         produto.setNome(dadosProduto.getNome());
@@ -82,7 +85,7 @@ public class ProdutoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoId));
 
         if (!produto.getEmpresa().getId().equals(empresa.getId())) {
-            throw new IllegalStateException("Conflito de dados: Este produto não pertence à empresa informada.");
+            throw new IllegalStateException("Conflito: Este produto não pertence à empresa informada.");
         }
 
         produtoRepository.delete(produto);

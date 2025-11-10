@@ -20,8 +20,12 @@ public class EventoService {
     }
 
     public Evento criarEvento(Evento evento) {
-        String chave = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        evento.setChaveInscricao(chave);
+
+        String chaveCli = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String chaveEmp = UUID.randomUUID().toString().substring(9, 17).toUpperCase();
+        evento.setChaveCliente(chaveCli);
+        evento.setChaveEmpresa(chaveEmp);
+
         return eventoRepository.save(evento);
     }
 

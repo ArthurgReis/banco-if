@@ -1,9 +1,10 @@
 package br.com.bancofeira.banco_feira.dto;
 
+import br.com.bancofeira.banco_feira.model.Evento;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import lombok.Data;
 
 @Data
 public class EventoResponseDto {
@@ -11,15 +12,18 @@ public class EventoResponseDto {
     private String nome;
     private LocalDate dataRealizacao;
     private BigDecimal creditoInicialCliente;
-    private String chaveInscricao;
+    private String chaveCliente;
+    private String chaveEmpresa;
 
-    public static EventoResponseDto fromEntity(br.com.bancofeira.banco_feira.model.Evento evento) {
+    public static EventoResponseDto fromEntity(Evento evento) {
+
         EventoResponseDto dto = new EventoResponseDto();
         dto.setId(evento.getId());
         dto.setNome(evento.getNome());
         dto.setDataRealizacao(evento.getDataRealizacao());
         dto.setCreditoInicialCliente(evento.getCreditoInicialCliente());
-        dto.setChaveInscricao(evento.getChaveInscricao());
+        dto.setChaveCliente(evento.getChaveCliente());
+        dto.setChaveEmpresa(evento.getChaveEmpresa());
         return dto;
     }
 }
