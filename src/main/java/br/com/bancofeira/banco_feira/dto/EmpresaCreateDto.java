@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class InscricaoEmpresaDto {
-    
-    @NotBlank(message = "A chave de inscrição é obrigatória.")
-    private String chaveInscricao;
+public class EmpresaCreateDto {
+
+    @NotBlank(message = "A chave de inscrição da empresa é obrigatória.")
+    private String chaveEmpresa; // Renomeado para clareza
 
     @NotBlank(message = "O nome fantasia é obrigatório.")
     private String nomeFantasia;

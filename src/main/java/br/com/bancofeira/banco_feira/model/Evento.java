@@ -28,8 +28,11 @@ public class Evento {
     @Column(name = "data_realizacao")
     private LocalDate dataRealizacao;
 
-    @Column(name = "chave_inscricao", nullable = false, unique = true, length = 8)
-    private String chaveInscricao;
+    @Column(name = "chave_cliente", nullable = false, unique = true, length = 8)
+    private String chaveCliente;
+
+    @Column(name = "chave_empresa", nullable = false, unique = true, length = 8)
+    private String chaveEmpresa;
 
     @Column(name = "credito_inicial_cliente", nullable = false)
     private BigDecimal creditoInicialCliente = BigDecimal.ZERO;

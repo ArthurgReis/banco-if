@@ -32,14 +32,6 @@ public class AdminService {
         this.empresaRepository = empresaRepository;
     }
 
-    @Transactional
-    public Evento criarEvento(Evento evento) {
-        
-        String chave = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        evento.setChaveInscricao(chave);
-        return eventoRepository.save(evento);
-    }
-
     public List<Usuario> listarTodosUsuarios() {
         return usuarioRepository.findAll();
     }

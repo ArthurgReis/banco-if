@@ -23,25 +23,34 @@ import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 @Configuration
 public class SecurityConfig {
 
-   @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                 AuthenticationProvider authenticationProvider,
-                                                 JwtAuthenticationFilter jwtAuthFilter) throws Exception {
+                                                   AuthenticationProvider authenticationProvider,
+                                                   JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
-            .cors(withDefaults()) 
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/api/auth/**",
-                    "/api/usuarios"
-                ).permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                .requestMatchers("/api/eventos/**","/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .authenticationProvider(authenticationProvider)
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // --- ROTAS PÚBLICAS (NÃO PRECISA DE LOGIN) ---
+                        .requestMatchers("/api/auth/**").permitAll() // Login, Esqueci Senha
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() // Criar novo usuário
+                        .requestMatchers(HttpMethod.GET, "/api/empresas/*/produtos").permitAll() // Ver produtos
+                        // ... (adicionar rotas públicas de 'ver eventos' se necessário) ...
+
+                        // --- ROTAS DE ADMIN (PRECISA DE ROLE_ADMIN) ---
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/eventos/**").hasRole("ADMIN") // Admin gerencia eventos
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("ADMIN") // Admin vê usuários
+
+                        // --- ROTAS AUTENTICADAS (PRECISA ESTAR LOGADO, QUALQUER PAPEL) ---
+                        .requestMatchers("/api/inscricoes/**").authenticated() // Inscrever-se (cliente ou empresa)
+                        .requestMatchers("/api/empresas/**").authenticated() // Criar/gerenciar empresa e produtos
+                        .requestMatchers("/api/usuarios/me").authenticated() // Ver seus próprios dados
+
+                        .anyRequest().authenticated() // Qualquer outra rota não listada exige login
+                )
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
