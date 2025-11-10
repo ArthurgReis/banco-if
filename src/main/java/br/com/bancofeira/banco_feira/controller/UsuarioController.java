@@ -32,17 +32,12 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Endpoint PROTEGIDO para o usuário logado buscar seus próprios dados.
-     */
+
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UsuarioResponseDto>> buscarMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
-        // Retorna o DTO do usuário que já foi carregado pelo Spring Security
         UsuarioResponseDto usuarioDto = UsuarioResponseDto.fromEntity(usuarioLogado);
         ApiResponse<UsuarioResponseDto> response = new ApiResponse<>(true, "Dados do usuário logado.", usuarioDto);
         return ResponseEntity.ok(response);
     }
 
-    // OS MÉTODOS listarTodos() E buscarPorId(id) FORAM REMOVIDOS.
-    // A listagem de usuários agora é uma responsabilidade exclusiva do Admin.
 }

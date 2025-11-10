@@ -17,7 +17,6 @@ public class InscricaoService {
     private final InscricaoRepository inscricaoRepository;
     private final EventoRepository eventoRepository;
     private final RoleRepository roleRepository;
-    // Removemos os repositórios de Empresa e Usuário
 
     public InscricaoService(InscricaoRepository inscricaoRepository, EventoRepository eventoRepository, RoleRepository roleRepository) {
         this.inscricaoRepository = inscricaoRepository;
@@ -46,5 +45,4 @@ public class InscricaoService {
         return inscricaoRepository.save(novaInscricao);
     }
 
-    // O método 'inscreverEmpresaEmEvento' FOI REMOVIDO DAQUI.
 }

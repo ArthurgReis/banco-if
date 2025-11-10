@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/empresas") // Endereço base para empresas
+@RequestMapping("/api/empresas")
 public class EmpresaController {
 
     private final EmpresaService empresaService;
 
-    // Removemos a dependência do ProdutoService
     public EmpresaController(EmpresaService empresaService) {
         this.empresaService = empresaService;
     }
@@ -36,6 +35,4 @@ public class EmpresaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // NENHUM ENDPOINT DE PRODUTO DEVE ESTAR AQUI!
-    // Futuramente, podemos adicionar GET /api/empresas, GET /api/empresas/{id}
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 public class EmpresaCreateDto {
 
     @NotBlank(message = "A chave de inscrição da empresa é obrigatória.")
-    private String chaveEmpresa; // Renomeado para clareza
+    private String chaveEmpresa;
 
     @NotBlank(message = "O nome fantasia é obrigatório.")
     private String nomeFantasia;

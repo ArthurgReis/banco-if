@@ -1,12 +1,12 @@
 package br.com.bancofeira.banco_feira.config;
 
+import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -17,8 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 
 @Configuration
 public class SecurityConfig {
@@ -31,23 +29,19 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // --- ROTAS PÚBLICAS (NÃO PRECISA DE LOGIN) ---
-                        .requestMatchers("/api/auth/**").permitAll() // Login, Esqueci Senha
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll() // Criar novo usuário
-                        .requestMatchers(HttpMethod.GET, "/api/empresas/*/produtos").permitAll() // Ver produtos
-                        // ... (adicionar rotas públicas de 'ver eventos' se necessário) ...
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/empresas/*/produtos").permitAll()
 
-                        // --- ROTAS DE ADMIN (PRECISA DE ROLE_ADMIN) ---
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/eventos/**").hasRole("ADMIN") // Admin gerencia eventos
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("ADMIN") // Admin vê usuários
+                        .requestMatchers("/api/eventos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("ADMIN")
 
-                        // --- ROTAS AUTENTICADAS (PRECISA ESTAR LOGADO, QUALQUER PAPEL) ---
-                        .requestMatchers("/api/inscricoes/**").authenticated() // Inscrever-se (cliente ou empresa)
-                        .requestMatchers("/api/empresas/**").authenticated() // Criar/gerenciar empresa e produtos
-                        .requestMatchers("/api/usuarios/me").authenticated() // Ver seus próprios dados
+                        .requestMatchers("/api/inscricoes/**").authenticated()
+                        .requestMatchers("/api/empresas/**").authenticated()
+                        .requestMatchers("/api/usuarios/me").authenticated()
 
-                        .anyRequest().authenticated() // Qualquer outra rota não listada exige login
+                        .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
