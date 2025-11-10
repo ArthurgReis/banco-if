@@ -63,7 +63,6 @@ public class AdminController {
         return inscricaoRepository.findByEventoId(eventoId);
     }
 
-    // --- NOVO MÉTODO (Requisito do Admin) ---
     public List<Empresa> listarEmpresasPorEvento(Integer eventoId) {
         if (!eventoRepository.existsById(eventoId)) {
             throw new ResourceNotFoundException("Evento não encontrado com o ID: " + eventoId);

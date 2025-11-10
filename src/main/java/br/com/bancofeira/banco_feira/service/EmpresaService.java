@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class EmpresaService {
 
-    // Contém apenas os repositórios que ELA precisa
     private final EmpresaRepository empresaRepository;
     private final EventoRepository eventoRepository;
     private final UsuarioRepository usuarioRepository;
@@ -31,11 +30,9 @@ public class EmpresaService {
 
     @Transactional
     public Empresa criarEmpresa(EmpresaCreateDto dto, Usuario dono) {
-        // 1. Valida a chave
         Evento evento = eventoRepository.findByChaveEmpresa(dto.getChaveEmpresa())
                 .orElseThrow(() -> new ResourceNotFoundException("Chave de inscrição de empresa inválida!"));
 
-        // 2. Concede papéis
         Role roleEmpresa = roleRepository.findByNome("ROLE_EMPRESA")
                 .orElseThrow(() -> new RuntimeException("Configuração crítica: ROLE_EMPRESA não encontrado."));
         Role roleCliente = roleRepository.findByNome("ROLE_CLIENTE")
@@ -43,7 +40,6 @@ public class EmpresaService {
         dono.getRoles().add(roleEmpresa);
         dono.getRoles().add(roleCliente);
 
-        // 3. Cria a empresa
         Empresa novaEmpresa = new Empresa();
         novaEmpresa.setNomeFantasia(dto.getNomeFantasia());
         novaEmpresa.setDescricaoCurta(dto.getDescricaoCurta());
@@ -52,12 +48,10 @@ public class EmpresaService {
 
         empresaRepository.save(novaEmpresa);
 
-        // 4. Vincula dono e salva
         dono.getEmpresas().add(novaEmpresa);
         usuarioRepository.save(dono);
 
         return novaEmpresa;
     }
 
-    // NENHUM MÉTODO DE PRODUTO DEVE ESTAR AQUI!
 }

@@ -4,7 +4,7 @@ import br.com.bancofeira.banco_feira.dto.ProdutoResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Produto;
 import br.com.bancofeira.banco_feira.model.Usuario;
-import br.com.bancofeira.banco_feira.service.ProdutoService; // Depende do ProdutoService
+import br.com.bancofeira.banco_feira.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/empresas/{empresaId}/produtos") // Endereço base aninhado
+@RequestMapping("/api/empresas/{empresaId}/produtos")
 public class ProdutoController {
 
     private final ProdutoService produtoService;

@@ -29,7 +29,6 @@ public class ProdutoService {
                 .anyMatch(emp -> emp.getId().equals(empresa.getId()));
 
         if (!temPermissao) {
-            // Esta exceção será capturada pelo RestExceptionHandler
             throw new IllegalStateException("Acesso negado. Você não tem permissão para gerenciar esta empresa.");
         }
     }
@@ -39,7 +38,6 @@ public class ProdutoService {
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
 
-        // Valida se o usuário logado é o dono
         validarPermissao(empresa, usuarioLogado);
 
         produto.setEmpresa(empresa);
