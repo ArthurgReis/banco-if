@@ -1,23 +1,22 @@
 package br.com.bancofeira.banco_feira.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.crypto.SecretKey;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-
+import br.com.bancofeira.banco_feira.model.Empresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -30,11 +29,16 @@ public class JwtService {
                                   .map(GrantedAuthority::getAuthority)
                                   .collect(Collectors.toList());
 
+        List<Integer> empresaIds = usuario.getEmpresas().stream()
+                .map(Empresa::getId)
+                .collect(Collectors.toList());
+
         return Jwts.builder()
                 .subject(usuario.getUsername()) 
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) 
                 .claim("roles", roles)
+                .claim("empresaIds", empresaIds)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
