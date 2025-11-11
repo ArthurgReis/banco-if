@@ -1,7 +1,10 @@
 package br.com.bancofeira.banco_feira.config;
 
-import java.io.IOException;
-
+import br.com.bancofeira.banco_feira.service.JwtService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,11 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import br.com.bancofeira.banco_feira.service.JwtService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -34,9 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getServletPath();
-        
-        if (path.startsWith("/api/auth")) {
+        final String path = request.getServletPath();
+
+        if (path.startsWith("/api/auth") || (path.equals("/api/usuarios") && request.getMethod().equals("POST"))) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,7 +65,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

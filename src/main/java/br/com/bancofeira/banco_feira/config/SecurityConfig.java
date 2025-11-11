@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class SecurityConfig {
@@ -26,21 +27,24 @@ public class SecurityConfig {
                                                    AuthenticationProvider authenticationProvider,
                                                    JwtAuthenticationFilter jwtAuthFilter) throws Exception {
         http
+                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empresas/*/produtos").permitAll()
-
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/eventos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("ADMIN")
-
+                        .requestMatchers("/api/usuarios/me").authenticated()
                         .requestMatchers("/api/inscricoes/**").authenticated()
                         .requestMatchers("/api/empresas/**").authenticated()
-                        .requestMatchers("/api/usuarios/me").authenticated()
-
+                        .requestMatchers(HttpMethod.GET, "/api/eventos/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/eventos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/eventos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/eventos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/eventos").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
