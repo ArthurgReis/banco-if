@@ -1,41 +1,73 @@
 package br.com.bancofeira.banco_feira.service;
 
-import java.util.Set;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
+import br.com.bancofeira.banco_feira.model.ConfirmationToken;
 import br.com.bancofeira.banco_feira.model.Role;
 import br.com.bancofeira.banco_feira.model.Usuario;
+import br.com.bancofeira.banco_feira.repository.ConfirmationTokenRepository;
 import br.com.bancofeira.banco_feira.repository.RoleRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UsuarioService {
     private final RoleRepository roleRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
+    private final ConfirmationTokenRepository tokenRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          PasswordEncoder passwordEncoder,
+                          RoleRepository roleRepository,
+                          EmailService emailService, ConfirmationTokenRepository tokenRepository) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
+        this.emailService = emailService;
+        this.tokenRepository = tokenRepository;
     }
 
-    public Usuario criarUsuario(Usuario usuario){
-        if(usuarioRepository.findByCpf(usuario.getCpf()).isPresent()){
+    @Transactional
+    public Usuario criarUsuario(Usuario usuario) {
+        if (usuarioRepository.findByCpf(usuario.getCpf()).isPresent()) {
             throw new IllegalStateException("CPF já cadastrado no sistema.");
         }
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new IllegalStateException("E-mail já cadastrado no sistema.");
+        }
+
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
-        usuario.setSenha(senhaCriptografada);
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        Role clientRole = roleRepository.findByNome("ROLE_CLIENTE").orElseThrow(/* ... */);
+        usuario.setRoles(Set.of(clientRole));
 
-        Role clientRole = roleRepository.findByNome("ROLE_CLIENTE")
-                .orElseThrow(() -> new RuntimeException("Role 'ROLE_CLIENTE' não encontrada."));
-            usuario.setRoles(Set.of(clientRole));
-        
-        return usuarioRepository.save(usuario);
+        Usuario novoUsuario = usuarioRepository.save(usuario);
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                novoUsuario
+        );
+        tokenRepository.save(confirmationToken);
+
+        try {
+            emailService.enviarEmailDeConfirmacao(novoUsuario, token);
+        } catch (Exception e) {
+            // Em um app real, teríamos uma fila de reenvio.
+            System.err.println("Falha ao enviar e-mail de confirmação: " + e.getMessage());
+        }
+
+        return novoUsuario;
     }
-
     public java.util.List<Usuario> listarTodos(){
         return usuarioRepository.findAll();
 

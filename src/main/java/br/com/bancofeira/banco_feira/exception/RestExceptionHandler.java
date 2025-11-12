@@ -1,22 +1,21 @@
 package br.com.bancofeira.banco_feira.exception;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import br.com.bancofeira.banco_feira.model.ApiResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import br.com.bancofeira.banco_feira.model.ApiResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -60,5 +59,25 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         e.printStackTrace();
         ApiResponse<Object> response = new ApiResponse<>(false, "Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.", null);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDisabledException(DisabledException e) {
+        ApiResponse<Object> response = new ApiResponse<>(
+                false,
+                "Conta não ativada. Por favor, verifique seu e-mail para o link de confirmação.",
+                null
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBadCredentialsException(BadCredentialsException e) {
+        ApiResponse<Object> response = new ApiResponse<>(
+                false,
+                "E-mail ou senha inválidos.",
+                null
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }
