@@ -62,7 +62,6 @@ public class UsuarioService {
         try {
             emailService.enviarEmailDeConfirmacao(novoUsuario, token);
         } catch (Exception e) {
-            // Em um app real, teríamos uma fila de reenvio.
             System.err.println("Falha ao enviar e-mail de confirmação: " + e.getMessage());
         }
 
