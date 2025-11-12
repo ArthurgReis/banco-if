@@ -6,6 +6,7 @@ import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Empresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.service.EmpresaService;
+import br.com.bancofeira.banco_feira.service.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmpresaController {
 
     private final EmpresaService empresaService;
+    private final JwtService jwtService;
 
-    public EmpresaController(EmpresaService empresaService) {
+    public EmpresaController(EmpresaService empresaService, JwtService jwtService) {
         this.empresaService = empresaService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping
@@ -31,7 +34,17 @@ public class EmpresaController {
             @AuthenticationPrincipal Usuario usuarioLogado) {
 
         Empresa novaEmpresa = empresaService.criarEmpresa(dto, usuarioLogado);
-        ApiResponse<EmpresaResponseDto> response = new ApiResponse<>(true, "Empresa criada com sucesso!", EmpresaResponseDto.fromEntity(novaEmpresa));
+
+        String novoToken = jwtService.generateToken(usuarioLogado);
+
+        EmpresaResponseDto empresaDto = EmpresaResponseDto.fromEntity(novaEmpresa);
+
+        ApiResponse<EmpresaResponseDto> response = new ApiResponse<>(
+                true,
+                "Empresa inscrita com sucesso!",
+                empresaDto,
+                novoToken
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

@@ -1,15 +1,14 @@
 package br.com.bancofeira.banco_feira.runner;
 
-import java.util.Set;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-
 import br.com.bancofeira.banco_feira.model.Role;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.repository.RoleRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -57,7 +56,8 @@ public class DataSeeder implements CommandLineRunner {
             admin.setEmail("admin@bancofeira.com");
             admin.setCpf("11144477735"); 
             admin.setSenha(passwordEncoder.encode("admin123")); 
-            admin.setRoles(Set.of(adminRole, clientRole)); 
+            admin.setRoles(Set.of(adminRole, clientRole));
+            admin.setEnabled(true);
 
             usuarioRepository.save(admin);
             System.out.println("Usuário ADMIN criado.");

@@ -6,6 +6,7 @@ import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Inscricao;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.service.InscricaoService;
+import br.com.bancofeira.banco_feira.service.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class InscricaoController {
 
     private final InscricaoService inscricaoService;
+    private final JwtService jwtService;
 
-    public InscricaoController(InscricaoService inscricaoService) {
+    public InscricaoController(InscricaoService inscricaoService, JwtService jwtService) {
         this.inscricaoService = inscricaoService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/cliente")
@@ -34,8 +37,17 @@ public class InscricaoController {
                 inscricaoDto.getChaveInscricao(),
                 usuarioLogado
         );
+
+        String novoToken = jwtService.generateToken(usuarioLogado);
+
         InscricaoClienteResponseDto inscricaoResponseDto = InscricaoClienteResponseDto.fromEntity(novaInscricao);
-        ApiResponse<InscricaoClienteResponseDto> response = new ApiResponse<>(true, "Inscrição no evento realizada com sucesso!", inscricaoResponseDto);
+
+        ApiResponse<InscricaoClienteResponseDto> response = new ApiResponse<>(
+                true,
+                "Inscrição realizada com sucesso!",
+                inscricaoResponseDto,
+                novoToken
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
