@@ -21,9 +21,6 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    /**
-     * Endpoint PÚBLICO para criar um novo usuário (cliente).
-     */
     @PostMapping
     public ResponseEntity<ApiResponse<UsuarioResponseDto>> criarUsuario(@RequestBody @Valid Usuario usuario) {
         Usuario novoUsuario = usuarioService.criarUsuario(usuario);

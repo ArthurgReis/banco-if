@@ -32,11 +32,14 @@ public class JwtService {
         List<Integer> empresaIds = usuario.getEmpresas().stream()
                 .map(Empresa::getId)
                 .collect(Collectors.toList());
+        
+        String nome = usuario.getNome();
 
         return Jwts.builder()
                 .subject(usuario.getUsername()) 
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 )) 
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 ))
+                .claim("nome",nome)
                 .claim("roles", roles)
                 .claim("empresaIds", empresaIds)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
