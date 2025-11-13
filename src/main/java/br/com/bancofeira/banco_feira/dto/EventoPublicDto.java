@@ -8,12 +8,14 @@ import java.time.LocalDate;
 @Data
 public class EventoPublicDto {
 
+    private int id;
     private String nome;
     private LocalDate dataRealizacao;
     private BigDecimal creditoInicialCliente;
 
     public static EventoPublicDto fromEntity(Evento evento) {
         EventoPublicDto dto = new EventoPublicDto();
+        dto.setId(evento.getId());
         dto.setNome(evento.getNome());
         dto.setDataRealizacao(evento.getDataRealizacao());
         dto.setCreditoInicialCliente(evento.getCreditoInicialCliente());

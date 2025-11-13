@@ -1,14 +1,14 @@
 package br.com.bancofeira.banco_feira.service;
 
-import java.util.List;
-import java.util.UUID;
-
+import br.com.bancofeira.banco_feira.dto.EventoRequestDto;
+import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
+import br.com.bancofeira.banco_feira.model.Evento;
+import br.com.bancofeira.banco_feira.repository.EventoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
-import br.com.bancofeira.banco_feira.model.Evento; 
-import br.com.bancofeira.banco_feira.repository.EventoRepository;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class EventoService {
@@ -19,14 +19,19 @@ public class EventoService {
         this.eventoRepository = eventoRepository;
     }
 
-    public Evento criarEvento(Evento evento) {
+    public Evento criarEvento(EventoRequestDto eventoDto) {
+
+        Evento novoEvento = new Evento();
+        novoEvento.setNome(eventoDto.getNome());
+        novoEvento.setDataRealizacao(eventoDto.getDataRealizacao());
+        novoEvento.setCreditoInicialCliente(eventoDto.getCreditoInicialCliente());
 
         String chaveCli = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         String chaveEmp = UUID.randomUUID().toString().substring(9, 17).toUpperCase();
-        evento.setChaveCliente(chaveCli);
-        evento.setChaveEmpresa(chaveEmp);
+        novoEvento.setChaveCliente(chaveCli);
+        novoEvento.setChaveEmpresa(chaveEmp);
 
-        return eventoRepository.save(evento);
+        return eventoRepository.save(novoEvento);
     }
 
     public List<Evento> listarEventos() {
