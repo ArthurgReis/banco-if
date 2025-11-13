@@ -1,6 +1,7 @@
 package br.com.bancofeira.banco_feira.controller;
 
 import br.com.bancofeira.banco_feira.dto.EventoPublicDto;
+import br.com.bancofeira.banco_feira.dto.EventoRequestDto;
 import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Evento;
@@ -24,10 +25,11 @@ public class EventoController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<EventoResponseDto>> criarEvento(@RequestBody @Valid Evento evento) {
-        Evento novoEvento = eventoService.criarEvento(evento);
-        EventoResponseDto eventoDto = EventoResponseDto.fromEntity(novoEvento);
-        ApiResponse<EventoResponseDto> response = new ApiResponse<>(true, "Evento criado com sucesso!", eventoDto);
+    public ResponseEntity<ApiResponse<EventoResponseDto>> criarEvento(@RequestBody @Valid EventoRequestDto eventoDto) {
+        Evento novoEvento = eventoService.criarEvento(eventoDto);
+
+        EventoResponseDto eventoResponseDto = EventoResponseDto.fromEntity(novoEvento);
+        ApiResponse<EventoResponseDto> response = new ApiResponse<>(true, "Evento criado com sucesso!", eventoResponseDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
