@@ -21,9 +21,6 @@ public class ProdutoService {
         this.empresaRepository = empresaRepository;
     }
 
-    /**
-     * Valida se o usuário logado tem permissão para gerenciar a empresa alvo.
-     */
     private void validarPermissao(Empresa empresa, Usuario usuarioLogado) {
         boolean temPermissao = usuarioLogado.getEmpresas().stream()
                 .anyMatch(emp -> emp.getId().equals(empresa.getId()));

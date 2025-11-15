@@ -45,7 +45,8 @@ public class UsuarioService {
 
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        Role clientRole = roleRepository.findByNome("ROLE_CLIENTE").orElseThrow(/* ... */);
+        Role clientRole = roleRepository.findByNome("ROLE_CLIENTE")
+                .orElseThrow(() -> new RuntimeException("Configuração crítica: ROLE_CLIENTE não encontrado."));
         usuario.setRoles(Set.of(clientRole));
 
         Usuario novoUsuario = usuarioRepository.save(usuario);

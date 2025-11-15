@@ -1,18 +1,18 @@
 package br.com.bancofeira.banco_feira.controller;
 
 import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
+import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
 import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
-import br.com.bancofeira.banco_feira.model.ApiResponse;
-import br.com.bancofeira.banco_feira.model.Empresa;
-import br.com.bancofeira.banco_feira.model.Inscricao;
-import br.com.bancofeira.banco_feira.model.Usuario;
+import br.com.bancofeira.banco_feira.model.*;
 import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.EventoRepository;
 import br.com.bancofeira.banco_feira.repository.InscricaoRepository;
 import br.com.bancofeira.banco_feira.service.AdminService;
+import br.com.bancofeira.banco_feira.service.EventoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,12 +27,14 @@ public class AdminController {
     private final EventoRepository eventoRepository;
     private final InscricaoRepository inscricaoRepository;
     private final EmpresaRepository empresaRepository;
+    private final EventoService eventoService;
 
-    public AdminController(AdminService adminService, EventoRepository eventoRepository, InscricaoRepository inscricaoRepository, EmpresaRepository empresaRepository) {
+    public AdminController(AdminService adminService, EventoRepository eventoRepository, InscricaoRepository inscricaoRepository, EmpresaRepository empresaRepository, EventoService eventoService) {
         this.adminService = adminService;
         this.eventoRepository = eventoRepository;
         this.inscricaoRepository = inscricaoRepository;
         this.empresaRepository = empresaRepository;
+        this.eventoService = eventoService;
     }
 
     @GetMapping("/usuarios")
@@ -56,6 +58,8 @@ public class AdminController {
 
         return ResponseEntity.ok(new ApiResponse<>(true, "Empresas listadas com sucesso.", dtos));
     }
+
+
     public List<Inscricao> listarClientesPorEvento(Integer eventoId) {
         if (!eventoRepository.existsById(eventoId)) {
             throw new ResourceNotFoundException("Evento não encontrado com o ID: " + eventoId);
@@ -69,5 +73,17 @@ public class AdminController {
         }
         return empresaRepository.findByEventoId(eventoId);
     }
+
+    @GetMapping("/eventos/{id}")
+    public ResponseEntity<ApiResponse<EventoResponseDto>> buscarEventoPorIdAdmin(@PathVariable Integer id) {
+        Evento eventoEntidade = eventoService.buscarEventoPorId(id);
+
+        EventoResponseDto eventoDto = EventoResponseDto.fromEntity(eventoEntidade);
+
+        ApiResponse<EventoResponseDto> response = new ApiResponse<>(true, "Detalhes do evento (Admin View).", eventoDto);
+        return ResponseEntity.ok(response);
+    }
+
+
 
 }
