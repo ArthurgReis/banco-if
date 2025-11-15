@@ -1,25 +1,13 @@
 package br.com.bancofeira.banco_feira.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 
 @Data
 @Entity
@@ -46,6 +34,9 @@ public class Empresa {
 
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
+
+    @Column(name = "chave_funcionario", nullable = false, unique = true, length = 8) // <-- 1. CAMPO NOVO
+    private String chaveFuncionario;
 
     @ManyToMany(mappedBy = "empresas")
     @JsonIgnoreProperties("empresas") 

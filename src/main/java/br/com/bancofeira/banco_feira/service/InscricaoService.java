@@ -45,4 +45,9 @@ public class InscricaoService {
         return inscricaoRepository.save(novaInscricao);
     }
 
+    public Inscricao getMinhaInscricao(Integer eventoId, Usuario usuarioLogado) {
+        return inscricaoRepository.findByUsuarioIdAndEventoId(usuarioLogado.getId(), eventoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não está inscrito neste evento."));
+    }
+
 }

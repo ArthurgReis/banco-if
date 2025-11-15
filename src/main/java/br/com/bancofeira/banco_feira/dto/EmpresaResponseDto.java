@@ -1,10 +1,10 @@
 package br.com.bancofeira.banco_feira.dto;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 import br.com.bancofeira.banco_feira.model.StatusEmpresa;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 public class EmpresaResponseDto {
@@ -15,6 +15,7 @@ public class EmpresaResponseDto {
     private StatusEmpresa status;
     private LocalDateTime dataCadastro;
     private Integer eventoId;
+    private String chaveFuncionario;
 
     public static EmpresaResponseDto fromEntity(br.com.bancofeira.banco_feira.model.Empresa empresa) {
         EmpresaResponseDto dto = new EmpresaResponseDto();
@@ -27,6 +28,7 @@ public class EmpresaResponseDto {
         if (empresa.getEvento() != null) {
              dto.setEventoId(empresa.getEvento().getId());
         }
+        dto.setChaveFuncionario(empresa.getChaveFuncionario());
         return dto;
     }
 }

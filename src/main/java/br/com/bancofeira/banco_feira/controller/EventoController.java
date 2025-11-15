@@ -1,14 +1,19 @@
 package br.com.bancofeira.banco_feira.controller;
 
+import br.com.bancofeira.banco_feira.dto.CreditosResponseDto;
 import br.com.bancofeira.banco_feira.dto.EventoPublicDto;
 import br.com.bancofeira.banco_feira.dto.EventoRequestDto;
 import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Evento;
+import br.com.bancofeira.banco_feira.model.Inscricao;
+import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.service.EventoService;
+import br.com.bancofeira.banco_feira.service.InscricaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +24,11 @@ import java.util.stream.Collectors;
 public class EventoController {
 
     private final EventoService eventoService;
+    private final InscricaoService inscricaoService;
 
-    public EventoController(EventoService eventoService) {
+    public EventoController(EventoService eventoService, InscricaoService inscricaoService) {
         this.eventoService = eventoService;
+        this.inscricaoService = inscricaoService;
     }
 
     @PostMapping
@@ -42,6 +49,27 @@ public class EventoController {
                 .collect(Collectors.toList());
 
         ApiResponse<List<EventoPublicDto>> response = new ApiResponse<>(true, "Eventos listados com sucesso.", eventosDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<EventoPublicDto>> buscarEventoPorIdPublico(@PathVariable Integer id) {
+        Evento eventoEntidade = eventoService.buscarEventoPorId(id);
+        EventoPublicDto eventoDto = EventoPublicDto.fromEntity(eventoEntidade);
+        ApiResponse<EventoPublicDto> response = new ApiResponse<>(true, "Evento encontrado.", eventoDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/evento/{eventoId}/me")
+    public ResponseEntity<ApiResponse<CreditosResponseDto>> getMeusCreditosPorEvento(
+            @PathVariable Integer eventoId,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
+
+        Inscricao inscricao = inscricaoService.getMinhaInscricao(eventoId, usuarioLogado);
+
+        CreditosResponseDto creditosDto = new CreditosResponseDto(inscricao.getCreditos());
+
+        ApiResponse<CreditosResponseDto> response = new ApiResponse<>(true, "Saldo do cliente no evento.", creditosDto);
         return ResponseEntity.ok(response);
     }
 
