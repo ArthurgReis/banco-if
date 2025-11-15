@@ -54,6 +54,7 @@ public class EventoService {
         return eventoRepository.save(eventoExistente);
     }
 
+    @SuppressWarnings("null")
     @Transactional
     public void deletarEvento(Integer id) {
         Evento eventoParaDeletar = buscarEventoPorId(id);

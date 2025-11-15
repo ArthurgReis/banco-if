@@ -93,8 +93,10 @@ public class EmpresaService {
             throw new IllegalStateException("Você já faz parte desta empresa.");
         }
 
-        Role roleEmpresa = roleRepository.findByNome("ROLE_EMPRESA").orElseThrow(/*...*/);
-        Role roleCliente = roleRepository.findByNome("ROLE_CLIENTE").orElseThrow(/*...*/);
+        Role roleEmpresa = roleRepository.findByNome("ROLE_EMPRESA")
+            .orElseThrow(() -> new RuntimeException("Configuração crítica: ROLE_EMPRESA não encontrado."));
+        Role roleCliente = roleRepository.findByNome("ROLE_CLIENTE")
+            .orElseThrow(() -> new RuntimeException("Configuração crítica: ROLE_CLIENTE não encontrado."));
         novoFuncionario.getRoles().add(roleEmpresa);
         novoFuncionario.getRoles().add(roleCliente);
 

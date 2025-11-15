@@ -2,6 +2,7 @@ package br.com.bancofeira.banco_feira.controller;
 
 import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
 import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
+import br.com.bancofeira.banco_feira.dto.InscricaoClienteResponseDto;
 import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
 import br.com.bancofeira.banco_feira.model.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,28 +62,37 @@ public class AdminController {
     }
 
 
-    public List<Inscricao> listarClientesPorEvento(Integer eventoId) {
+    @GetMapping("/evento/{eventoId}/clientes")
+    public ResponseEntity<ApiResponse<List<InscricaoClienteResponseDto>>> listarClientesPorEvento(@PathVariable Integer eventoId) {
         if (!eventoRepository.existsById(eventoId)) {
             throw new ResourceNotFoundException("Evento não encontrado com o ID: " + eventoId);
         }
-        return inscricaoRepository.findByEventoId(eventoId);
+        List<Inscricao> clientes = inscricaoRepository.findByEventoId(eventoId);
+
+        List<InscricaoClienteResponseDto> clientesDto = clientes.stream().map(InscricaoClienteResponseDto::fromEntity).collect(Collectors.toList());
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Clientes listados por evento com sucesso", clientesDto));
     }
 
-    public List<Empresa> listarEmpresasPorEvento(Integer eventoId) {
+    @GetMapping("/evento/{eventoId}/empresas")
+    public ResponseEntity<ApiResponse<List<EmpresaResponseDto>>> listarEmpresasPorEvento(@PathVariable Integer eventoId) {
         if (!eventoRepository.existsById(eventoId)) {
             throw new ResourceNotFoundException("Evento não encontrado com o ID: " + eventoId);
         }
-        return empresaRepository.findByEventoId(eventoId);
+        List<Empresa> empresas = empresaRepository.findByEventoId(eventoId);
+
+        List<EmpresaResponseDto> empresasDto = empresas.stream().map(EmpresaResponseDto::fromEntity).collect(Collectors.toList());
+        return ResponseEntity.ok( new ApiResponse<>(true, "Empresas Listadas por evento com sucesso", empresasDto));
     }
 
-    @GetMapping("/eventos/{id}")
-    public ResponseEntity<ApiResponse<EventoResponseDto>> buscarEventoPorIdAdmin(@PathVariable Integer id) {
-        Evento eventoEntidade = eventoService.buscarEventoPorId(id);
+    @GetMapping("/eventos")
+    public ResponseEntity<ApiResponse<List<EventoResponseDto>>> buscarEventosAdmin() {
+        List<Evento> eventos = eventoService.listarEventos();
 
-        EventoResponseDto eventoDto = EventoResponseDto.fromEntity(eventoEntidade);
+        List<EventoResponseDto> eventosDto = eventos.stream().map(EventoResponseDto::fromEntity).collect(Collectors.toList());
 
-        ApiResponse<EventoResponseDto> response = new ApiResponse<>(true, "Detalhes do evento (Admin View).", eventoDto);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok( new ApiResponse<>(true, "Eventos listados com sucesso", eventosDto));
+
     }
 
 
