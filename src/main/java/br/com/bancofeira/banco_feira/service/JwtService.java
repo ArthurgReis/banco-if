@@ -36,6 +36,7 @@ public class JwtService {
         
         String nome = usuario.getNome();
 
+
         return Jwts.builder()
                 .subject(usuario.getUsername()) 
                 .issuedAt(new Date(System.currentTimeMillis()))

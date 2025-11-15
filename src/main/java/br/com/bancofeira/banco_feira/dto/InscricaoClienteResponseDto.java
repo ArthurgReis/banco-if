@@ -2,12 +2,14 @@ package br.com.bancofeira.banco_feira.dto;
 
 import java.math.BigDecimal;
 
+import br.com.bancofeira.banco_feira.model.Usuario;
 import lombok.Data;
 
 @Data
 public class InscricaoClienteResponseDto {
     private Integer id;
     private Integer usuarioId;
+    private String nomeCliente;
     private Integer eventoId;
     private BigDecimal creditos; 
 
@@ -17,6 +19,8 @@ public class InscricaoClienteResponseDto {
         if (inscricao.getUsuario() != null) {
             dto.setUsuarioId(inscricao.getUsuario().getId());
         }
+        Usuario cliente = inscricao.getUsuario();
+        dto.setNomeCliente(cliente.getNome());
         if (inscricao.getEvento() != null) {
             dto.setEventoId(inscricao.getEvento().getId());
         }
