@@ -32,6 +32,7 @@ public class JwtService {
         this.inscricaoRepository = inscricaoRepository;
     }
 
+    @SuppressWarnings("deprecation")
     public String generateToken(Usuario usuario) { 
         List<String> roles = usuario.getAuthorities().stream()
                                   .map(GrantedAuthority::getAuthority)

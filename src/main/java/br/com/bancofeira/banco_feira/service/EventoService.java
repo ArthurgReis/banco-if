@@ -40,6 +40,7 @@ public class EventoService {
         return eventoRepository.save(novoEvento);
     }
 
+    @SuppressWarnings("null")
     public List<Empresa> listarEmpresasPorEvento(Integer eventoId){
         if (!eventoRepository.existsById(eventoId)) {
             throw new ResourceNotFoundException("Evento não encontrado com o ID: " + eventoId);
@@ -52,6 +53,7 @@ public class EventoService {
         return eventoRepository.findAll();
     }
 
+    @SuppressWarnings("null")
     public Evento buscarEventoPorId(Integer id) {
         return eventoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado com o ID: " + id));

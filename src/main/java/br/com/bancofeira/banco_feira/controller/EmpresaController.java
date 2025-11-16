@@ -3,6 +3,7 @@ package br.com.bancofeira.banco_feira.controller;
 import br.com.bancofeira.banco_feira.dto.CreditosResponseDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaCreateDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
+import br.com.bancofeira.banco_feira.dto.EmpresaUpdateDto;
 import br.com.bancofeira.banco_feira.dto.JuntarEmpresaDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Empresa;
@@ -95,4 +96,34 @@ public class EmpresaController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<EmpresaResponseDto>> atualizarEmpresa(
+            @PathVariable Integer id,
+            @RequestBody @Valid EmpresaUpdateDto dto,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
+
+        Empresa empresaAtualizada = empresaService.atualizarEmpresa(id, dto, usuarioLogado);
+        
+        ApiResponse<EmpresaResponseDto> response = new ApiResponse<>(
+            true, 
+            "Empresa atualizada com sucesso!", 
+            EmpresaResponseDto.fromEntity(empresaAtualizada)
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deletarEmpresa(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
+
+        empresaService.deletarEmpresa(id, usuarioLogado);
+        
+        ApiResponse<Void> response = new ApiResponse<>(
+            true, 
+            "Empresa deletada com sucesso!", 
+            null
+        );
+        return ResponseEntity.ok(response);
+    }
 }
