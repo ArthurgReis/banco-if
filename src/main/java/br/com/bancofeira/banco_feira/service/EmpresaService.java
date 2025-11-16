@@ -10,6 +10,7 @@ import br.com.bancofeira.banco_feira.repository.RoleRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.UUID;
@@ -69,6 +70,7 @@ public class EmpresaService {
 
         return empresaRepository.findByEventoIdAndFuncionariosContains(eventoId, usuarioLogado);
     }
+
 
     public Empresa getMinhaEmpresa(Integer empresaId, Usuario usuarioLogado) {
         Empresa empresa = empresaRepository.findById(empresaId)
