@@ -31,20 +31,24 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
+                        
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empresas/*/produtos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/eventos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/eventos/*/empresas").permitAll()
+
                         .requestMatchers("/api/usuarios/me").authenticated()
                         .requestMatchers("/api/inscricoes/**").authenticated()
                         .requestMatchers("/api/empresas/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/eventos/**").authenticated()
+
                         .requestMatchers(HttpMethod.POST, "/api/eventos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/eventos/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/eventos/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/eventos").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider)
