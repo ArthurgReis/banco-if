@@ -73,6 +73,7 @@ public class UsuarioService {
 
     }
 
+    @SuppressWarnings("null")
     public Usuario buscarPorId(Integer id){
         return usuarioRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));

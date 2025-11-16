@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @RestController
@@ -62,6 +61,7 @@ public class AdminController {
     }
 
 
+    @SuppressWarnings("null")
     @GetMapping("/evento/{eventoId}/clientes")
     public ResponseEntity<ApiResponse<List<InscricaoClienteResponseDto>>> listarClientesPorEvento(@PathVariable Integer eventoId) {
         if (!eventoRepository.existsById(eventoId)) {
@@ -74,6 +74,7 @@ public class AdminController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Clientes listados por evento com sucesso", clientesDto));
     }
 
+    @SuppressWarnings("null")
     @GetMapping("/evento/{eventoId}/empresas")
     public ResponseEntity<ApiResponse<List<EmpresaResponseDto>>> listarEmpresasPorEvento(@PathVariable Integer eventoId) {
         if (!eventoRepository.existsById(eventoId)) {

@@ -12,11 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import br.com.bancofeira.banco_feira.model.Inscricao;
-import br.com.bancofeira.banco_feira.repository.InscricaoRepository;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class AuthService {

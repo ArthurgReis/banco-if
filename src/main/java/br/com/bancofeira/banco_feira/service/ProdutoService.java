@@ -32,6 +32,7 @@ public class ProdutoService {
 
     @Transactional
     public Produto criarProduto(Produto produto, Integer empresaId, Usuario usuarioLogado) {
+        @SuppressWarnings("null")
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
 
@@ -41,6 +42,7 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    @SuppressWarnings("null")
     public List<Produto> listarProdutosPorEmpresa(Integer empresaId) {
         if (!empresaRepository.existsById(empresaId)) {
             throw new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId);
@@ -50,11 +52,13 @@ public class ProdutoService {
 
     @Transactional
     public Produto atualizarProduto(Integer empresaId, Integer produtoId, Produto dadosProduto, Usuario usuarioLogado) {
+        @SuppressWarnings("null")
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
 
         validarPermissao(empresa, usuarioLogado);
 
+        @SuppressWarnings("null")
         Produto produto = produtoRepository.findById(produtoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoId));
 
@@ -71,11 +75,13 @@ public class ProdutoService {
 
     @Transactional
     public void deletarProduto(Integer empresaId, Integer produtoId, Usuario usuarioLogado) {
+        @SuppressWarnings("null")
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
 
         validarPermissao(empresa, usuarioLogado);
 
+        @SuppressWarnings("null")
         Produto produto = produtoRepository.findById(produtoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoId));
 

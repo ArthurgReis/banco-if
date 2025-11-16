@@ -2,16 +2,16 @@ package br.com.bancofeira.banco_feira.service;
 
 import br.com.bancofeira.banco_feira.dto.EmpresaCreateDto;
 import br.com.bancofeira.banco_feira.dto.JuntarEmpresaDto;
+import br.com.bancofeira.banco_feira.dto.EmpresaUpdateDto;
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
 import br.com.bancofeira.banco_feira.model.*;
 import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.EventoRepository;
+import br.com.bancofeira.banco_feira.repository.ProdutoRepository;
 import br.com.bancofeira.banco_feira.repository.RoleRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -22,15 +22,27 @@ public class EmpresaService {
     private final EventoRepository eventoRepository;
     private final UsuarioRepository usuarioRepository;
     private final RoleRepository roleRepository;
+    private final ProdutoRepository produtoRepository;
 
     public EmpresaService(EmpresaRepository empresaRepository,
                           EventoRepository eventoRepository,
                           UsuarioRepository usuarioRepository,
-                          RoleRepository roleRepository) {
+                          RoleRepository roleRepository, ProdutoRepository produtoRepository) {
         this.empresaRepository = empresaRepository;
         this.eventoRepository = eventoRepository;
         this.usuarioRepository = usuarioRepository;
         this.roleRepository = roleRepository;
+        this.produtoRepository = produtoRepository;
+    }
+
+
+    private void validarPermissao(Empresa empresa, Usuario usuarioLogado) {
+        boolean temPermissao = usuarioLogado.getEmpresas().stream()
+                .anyMatch(emp -> emp.getId().equals(empresa.getId()));
+
+        if (!temPermissao) {
+            throw new IllegalStateException("Acesso negado. Você não tem permissão para gerenciar esta empresa.");
+        }
     }
 
     @Transactional
@@ -62,6 +74,7 @@ public class EmpresaService {
         return novaEmpresa;
     }
 
+    @SuppressWarnings("null")
     public List<Empresa> listarMinhasEmpresasPorEvento(Integer eventoId, Usuario usuarioLogado) {
 
         if (!eventoRepository.existsById(eventoId)) {
@@ -73,6 +86,7 @@ public class EmpresaService {
 
 
     public Empresa getMinhaEmpresa(Integer empresaId, Usuario usuarioLogado) {
+        @SuppressWarnings("null")
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada."));
 
@@ -106,6 +120,35 @@ public class EmpresaService {
         usuarioRepository.save(novoFuncionario);
 
         return empresa;
+    }
+
+    @Transactional
+    public Empresa atualizarEmpresa(Integer empresaId, EmpresaUpdateDto dto, Usuario usuarioLogado) {
+        @SuppressWarnings("null")
+        Empresa empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada."));
+
+        validarPermissao(empresa, usuarioLogado);
+
+        empresa.setNomeFantasia(dto.getNomeFantasia());
+        empresa.setDescricaoCurta(dto.getDescricaoCurta());
+
+        return empresaRepository.save(empresa);
+    }
+
+    @SuppressWarnings("null")
+    @Transactional
+    public void deletarEmpresa(Integer empresaId, Usuario usuarioLogado) {
+        Empresa empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada."));
+
+        validarPermissao(empresa, usuarioLogado);
+
+
+        List<Produto> produtos = produtoRepository.findByEmpresaId(empresaId);
+        produtoRepository.deleteAll(produtos);
+        
+        empresaRepository.delete(empresa);
     }
 
 

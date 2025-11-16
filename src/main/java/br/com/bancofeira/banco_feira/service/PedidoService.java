@@ -33,6 +33,7 @@ public class PedidoService {
                 .findByUsuarioIdAndEventoId(cliente.getId(), checkoutDto.getEventoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não inscrito neste evento."));
 
+        @SuppressWarnings("null")
         Empresa empresa = empresaRepository.findById(checkoutDto.getEmpresaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada."));
 
@@ -52,6 +53,7 @@ public class PedidoService {
         novoPedido.setStatus(StatusPedido.PENDENTE);
 
         for (ItemCarrinhoDto itemDto : checkoutDto.getItens()) {
+            @SuppressWarnings("null")
             Produto produto = produtoRepository.findById(itemDto.getProdutoId())
                     .orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + itemDto.getProdutoId() + " não encontrado."));
 
@@ -94,6 +96,7 @@ public class PedidoService {
     }
 
     public List<Pedido> listarPedidosPorEmpresa(Integer empresaId, Usuario vendedorLogado) {
+        @SuppressWarnings("null")
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada."));
 
@@ -109,6 +112,7 @@ public class PedidoService {
 
     @Transactional
     public Pedido marcarPedidoComoEntregue(Integer pedidoId, Usuario vendedorLogado) {
+        @SuppressWarnings("null")
         Pedido pedido = pedidoRepository.findById(pedidoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado."));
 
