@@ -1,10 +1,12 @@
 package br.com.bancofeira.banco_feira.controller;
 
 import br.com.bancofeira.banco_feira.dto.CreditosResponseDto;
+import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
 import br.com.bancofeira.banco_feira.dto.EventoPublicDto;
 import br.com.bancofeira.banco_feira.dto.EventoRequestDto;
 import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
+import br.com.bancofeira.banco_feira.model.Empresa;
 import br.com.bancofeira.banco_feira.model.Evento;
 import br.com.bancofeira.banco_feira.model.Inscricao;
 import br.com.bancofeira.banco_feira.model.Usuario;
@@ -70,6 +72,19 @@ public class EventoController {
         CreditosResponseDto creditosDto = new CreditosResponseDto(inscricao.getCreditos());
 
         ApiResponse<CreditosResponseDto> response = new ApiResponse<>(true, "Saldo do cliente no evento.", creditosDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{eventoId}/empresas")
+    public ResponseEntity<ApiResponse<List<EmpresaResponseDto>>> listarEmpresasDoEvento(@PathVariable Integer eventoId) {
+        
+        List<Empresa> empresas = eventoService.listarEmpresasPorEvento(eventoId);
+
+        List<EmpresaResponseDto> dtos = empresas.stream()
+                .map(EmpresaResponseDto::fromEntity)
+                .collect(Collectors.toList());
+
+        ApiResponse<List<EmpresaResponseDto>> response = new ApiResponse<>(true, "Empresas do evento listadas.", dtos);
         return ResponseEntity.ok(response);
     }
 

@@ -12,8 +12,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import br.com.bancofeira.banco_feira.model.Inscricao;
+import br.com.bancofeira.banco_feira.repository.InscricaoRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -41,7 +44,9 @@ public class AuthService {
             new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha())
         );
 
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail()).orElseThrow();
+        Usuario usuario = usuarioRepository.findByEmailWithRolesAndEmpresas(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado."));
+        
         String token = jwtService.generateToken(usuario);
         
         return new AuthResponseDto(token);

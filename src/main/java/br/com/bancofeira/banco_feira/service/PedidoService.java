@@ -36,6 +36,13 @@ public class PedidoService {
         Empresa empresa = empresaRepository.findById(checkoutDto.getEmpresaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada."));
 
+        boolean isFuncionario = cliente.getEmpresas().stream()
+                                     .anyMatch(emp -> emp.getId().equals(empresa.getId()));
+        
+        if (isFuncionario) {
+            throw new IllegalStateException("Você não pode comprar produtos da sua própria empresa.");
+        }
+
         BigDecimal valorTotal = BigDecimal.ZERO;
         List<ItemPedido> itensDoPedido = new ArrayList<>();
 

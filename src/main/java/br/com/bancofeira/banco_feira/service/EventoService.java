@@ -3,20 +3,26 @@ package br.com.bancofeira.banco_feira.service;
 import br.com.bancofeira.banco_feira.dto.EventoRequestDto;
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
 import br.com.bancofeira.banco_feira.model.Evento;
+import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.EventoRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
+import br.com.bancofeira.banco_feira.model.Empresa;
+
 @Service
 public class EventoService {
 
     private final EventoRepository eventoRepository;
+    private final EmpresaRepository empresaRepository;
 
-    public EventoService(EventoRepository eventoRepository) {
+    public EventoService(EventoRepository eventoRepository, EmpresaRepository empresaRepository) {
         this.eventoRepository = eventoRepository;
+        this.empresaRepository = empresaRepository;
     }
 
     public Evento criarEvento(EventoRequestDto eventoDto) {
@@ -32,6 +38,14 @@ public class EventoService {
         novoEvento.setChaveEmpresa(chaveEmp);
 
         return eventoRepository.save(novoEvento);
+    }
+
+    public List<Empresa> listarEmpresasPorEvento(Integer eventoId){
+        if (!eventoRepository.existsById(eventoId)) {
+            throw new ResourceNotFoundException("Evento não encontrado com o ID: " + eventoId);
+        }
+        
+        return empresaRepository.findByEventoId(eventoId);
     }
 
     public List<Evento> listarEventos() {
