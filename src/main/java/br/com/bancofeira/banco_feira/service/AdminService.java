@@ -1,8 +1,12 @@
 package br.com.bancofeira.banco_feira.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
+import br.com.bancofeira.banco_feira.dto.EmpresaRankingDto;
+import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
 import br.com.bancofeira.banco_feira.model.Empresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
@@ -36,6 +40,20 @@ public class AdminService {
 
     public List<Empresa> listarTodasEmpresas() {
         return empresaRepository.findAll();
+    }
+
+    public List<EmpresaRankingDto> listarRankingEmpresas(Integer eventoId) {
+        
+        List<Empresa> empresas = empresaRepository.findRankingByEventoId(eventoId);
+
+        return empresas.stream()
+                .map(EmpresaRankingDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public Empresa buscarEmpresaDetalhes(Integer empresaId) {
+        return empresaRepository.findByIdWithFuncionarios(empresaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
     }
 
  

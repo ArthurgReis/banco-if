@@ -1,5 +1,7 @@
 package br.com.bancofeira.banco_feira.controller;
 
+import br.com.bancofeira.banco_feira.dto.AdminEmpresaDetalheDto;
+import br.com.bancofeira.banco_feira.dto.EmpresaRankingDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
 import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
 import br.com.bancofeira.banco_feira.dto.InscricaoClienteResponseDto;
@@ -96,6 +98,25 @@ public class AdminController {
 
     }
 
+    @GetMapping("/eventos/{eventoId}/ranking")
+    public ResponseEntity<ApiResponse<List<EmpresaRankingDto>>> getRankingEmpresasPorEvento(@PathVariable Integer eventoId) {
+        
+        List<EmpresaRankingDto> ranking = adminService.listarRankingEmpresas(eventoId);
+        
+        ApiResponse<List<EmpresaRankingDto>> response = new ApiResponse<>(true, "Ranking de empresas gerado.", ranking);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/empresas/{id}")
+    public ResponseEntity<ApiResponse<AdminEmpresaDetalheDto>> getDetalhesDaEmpresa(@PathVariable Integer id) {
+        
+        Empresa empresa = adminService.buscarEmpresaDetalhes(id);
+        
+        AdminEmpresaDetalheDto dto = AdminEmpresaDetalheDto.fromEntity(empresa);
+        
+        ApiResponse<AdminEmpresaDetalheDto> response = new ApiResponse<>(true, "Detalhes da empresa obtidos.", dto);
+        return ResponseEntity.ok(response);
+    }
 
 
 }
