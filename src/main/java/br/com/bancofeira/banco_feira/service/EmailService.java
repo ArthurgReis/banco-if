@@ -1,12 +1,17 @@
 package br.com.bancofeira.banco_feira.service;
 
 import br.com.bancofeira.banco_feira.model.Usuario;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
+
+    @Value("${app.frontend.url}")
+    private String frontendBaseUrl;
 
     private final JavaMailSender javaMailSender;
 
@@ -30,7 +35,7 @@ public class EmailService {
     }
 
     public void enviarEmailDeConfirmacao(Usuario usuario, String token) {
-        String linkDeConfirmacao = "http://localhost:4200/confirmar-conta?token=" + token;
+        String linkDeConfirmacao = frontendBaseUrl + "/confirmar-conta?token=" + token;
 
         String assunto = "Confirme seu E-mail - Banco Feira";
         String texto = "Olá, " + usuario.getNome() + "!\n\n"
