@@ -4,13 +4,11 @@ import br.com.bancofeira.banco_feira.dto.AdminEmpresaDetalheDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaRankingDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
 import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
-import br.com.bancofeira.banco_feira.dto.InscricaoClienteResponseDto;
 import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
 import br.com.bancofeira.banco_feira.model.*;
 import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.EventoRepository;
-import br.com.bancofeira.banco_feira.repository.InscricaoRepository;
 import br.com.bancofeira.banco_feira.service.AdminService;
 import br.com.bancofeira.banco_feira.service.EventoService;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +26,12 @@ public class AdminController {
 
     private final AdminService adminService;
     private final EventoRepository eventoRepository;
-    private final InscricaoRepository inscricaoRepository;
     private final EmpresaRepository empresaRepository;
     private final EventoService eventoService;
 
-    public AdminController(AdminService adminService, EventoRepository eventoRepository, InscricaoRepository inscricaoRepository, EmpresaRepository empresaRepository, EventoService eventoService) {
+    public AdminController(AdminService adminService, EventoRepository eventoRepository, EmpresaRepository empresaRepository, EventoService eventoService) {
         this.adminService = adminService;
         this.eventoRepository = eventoRepository;
-        this.inscricaoRepository = inscricaoRepository;
         this.empresaRepository = empresaRepository;
         this.eventoService = eventoService;
     }
@@ -62,19 +58,6 @@ public class AdminController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Empresas listadas com sucesso.", dtos));
     }
 
-
-    @SuppressWarnings("null")
-    @GetMapping("/evento/{eventoId}/clientes")
-    public ResponseEntity<ApiResponse<List<InscricaoClienteResponseDto>>> listarClientesPorEvento(@PathVariable Integer eventoId) {
-        if (!eventoRepository.existsById(eventoId)) {
-            throw new ResourceNotFoundException("Evento não encontrado com o ID: " + eventoId);
-        }
-        List<Inscricao> clientes = inscricaoRepository.findByEventoId(eventoId);
-
-        List<InscricaoClienteResponseDto> clientesDto = clientes.stream().map(InscricaoClienteResponseDto::fromEntity).collect(Collectors.toList());
-
-        return ResponseEntity.ok(new ApiResponse<>(true, "Clientes listados por evento com sucesso", clientesDto));
-    }
 
     @SuppressWarnings("null")
     @GetMapping("/evento/{eventoId}/empresas")

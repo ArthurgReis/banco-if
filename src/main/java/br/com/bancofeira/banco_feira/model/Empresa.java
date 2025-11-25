@@ -28,14 +28,11 @@ public class Empresa {
     @Column(nullable = false)
     private BigDecimal creditos = BigDecimal.ZERO;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusEmpresa status = StatusEmpresa.PENDENTE;
 
     @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
-    @Column(name = "chave_funcionario", nullable = false, unique = true, length = 8) // <-- 1. CAMPO NOVO
+    @Column(name = "chave_funcionario", nullable = false, unique = true, length = 8) 
     private String chaveFuncionario;
 
     @ManyToMany(mappedBy = "empresas")

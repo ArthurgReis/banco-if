@@ -1,15 +1,23 @@
 package br.com.bancofeira.banco_feira.controller;
 
+import br.com.bancofeira.banco_feira.dto.CheckoutRequestDto;
 import br.com.bancofeira.banco_feira.dto.CreditosResponseDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaCreateDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaUpdateDto;
 import br.com.bancofeira.banco_feira.dto.JuntarEmpresaDto;
+import br.com.bancofeira.banco_feira.dto.PedidoResponseDto;
+import br.com.bancofeira.banco_feira.dto.VendaSimulacaoResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
+import br.com.bancofeira.banco_feira.model.Cliente;
 import br.com.bancofeira.banco_feira.model.Empresa;
+import br.com.bancofeira.banco_feira.model.Pedido;
 import br.com.bancofeira.banco_feira.model.Usuario;
+import br.com.bancofeira.banco_feira.repository.ClienteRepository;
+import br.com.bancofeira.banco_feira.service.ClienteService;
 import br.com.bancofeira.banco_feira.service.EmpresaService;
 import br.com.bancofeira.banco_feira.service.JwtService;
+import br.com.bancofeira.banco_feira.service.PedidoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +32,17 @@ import java.util.stream.Collectors;
 public class EmpresaController {
 
     private final EmpresaService empresaService;
+    private final ClienteService clienteService;
     private final JwtService jwtService;
+    private final PedidoService pedidoService;
+    private final ClienteRepository clienteRepository;
 
-    public EmpresaController(EmpresaService empresaService, JwtService jwtService) {
+    public EmpresaController(EmpresaService empresaService, JwtService jwtService, ClienteService clienteService, PedidoService pedidoService, ClienteRepository clienteRepository) {
         this.empresaService = empresaService;
+        this.clienteService = clienteService;
         this.jwtService = jwtService;
+        this.pedidoService = pedidoService;
+        this.clienteRepository = clienteRepository;
     }
 
     @PostMapping
@@ -126,4 +140,27 @@ public class EmpresaController {
         );
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/venda/simulacao")
+        public ResponseEntity<ApiResponse<VendaSimulacaoResponseDto>> simularVenda(
+                @RequestBody @Valid CheckoutRequestDto checkout) {
+            
+            VendaSimulacaoResponseDto simulacao = pedidoService.simularVenda(checkout);
+            
+            return ResponseEntity.ok(new ApiResponse<>(true, "Cálculo realizado.", simulacao));
+        }
+
+        @PostMapping("/venda")
+        public ResponseEntity<ApiResponse<PedidoResponseDto>> realizarVenda(
+                @AuthenticationPrincipal Usuario usuarioLogado,
+                @RequestBody @Valid CheckoutRequestDto checkout) {
+
+            Pedido pedido = pedidoService.processarVenda(checkout, usuarioLogado);
+            
+            return ResponseEntity.ok(new ApiResponse<>(
+                true, 
+                "Venda realizada com sucesso!", 
+                PedidoResponseDto.fromEntity(pedido)
+            ));
+        }
 }

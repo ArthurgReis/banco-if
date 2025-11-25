@@ -68,9 +68,7 @@ public class Usuario implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @Column(nullable = false)
-    private boolean enabled = false;
-
+    
     @PrePersist
     protected void onCreate() {
         this.dataCadastro = LocalDateTime.now();
@@ -110,6 +108,6 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return true;
     }
 }

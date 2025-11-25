@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Data
 @Entity
 @Table(name = "pedidos")
@@ -17,25 +19,22 @@ public class Pedido {
     private Integer id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "inscricao_id")
-    private Inscricao inscricao;
-
-    @ManyToOne(optional = false)
     @JoinColumn(name = "empresa_id")
     private Empresa empresa;
 
     @Column(nullable = false)
     private BigDecimal valorTotal;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusPedido status;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataPedido;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<ItemPedido> itens;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
+    @JsonIgnoreProperties("pedido")
+    private Cliente cliente;
 
     @PrePersist
     protected void onCreate() {

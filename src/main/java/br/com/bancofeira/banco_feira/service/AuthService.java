@@ -65,19 +65,4 @@ public class AuthService {
 
     }
 
-    @Transactional
-    public void confirmarConta(String token) {
-        ConfirmationToken confirmationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new ResourceNotFoundException("Token de confirmação inválido ou não encontrado."));
-
-        if (confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Token expirado.");
-        }
-
-        Usuario usuario = confirmationToken.getUsuario();
-        usuario.setEnabled(true);
-        usuarioRepository.save(usuario);
-
-        tokenRepository.delete(confirmationToken);
-    }
 }
