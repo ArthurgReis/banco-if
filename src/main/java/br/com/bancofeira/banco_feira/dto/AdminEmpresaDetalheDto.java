@@ -1,7 +1,6 @@
 package br.com.bancofeira.banco_feira.dto;
 
 import br.com.bancofeira.banco_feira.model.Empresa;
-import br.com.bancofeira.banco_feira.model.StatusEmpresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import lombok.Data;
 
@@ -18,7 +17,6 @@ public class AdminEmpresaDetalheDto {
     private String nomeFantasia;
     private String descricaoCurta;
     private BigDecimal creditos;
-    private StatusEmpresa status;
     private List<String> nomesIntegrantes;
 
     public static AdminEmpresaDetalheDto fromEntity(Empresa empresa) {
@@ -32,7 +30,6 @@ public class AdminEmpresaDetalheDto {
         dto.setNomeFantasia(empresa.getNomeFantasia());
         dto.setDescricaoCurta(empresa.getDescricaoCurta());
         dto.setCreditos(empresa.getCreditos());
-        dto.setStatus(empresa.getStatus());
 
         if (empresa.getFuncionarios() != null) {
             dto.setNomesIntegrantes(

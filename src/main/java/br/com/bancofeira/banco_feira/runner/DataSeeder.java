@@ -57,7 +57,6 @@ public class DataSeeder implements CommandLineRunner {
             admin.setCpf("11144477735"); 
             admin.setSenha(passwordEncoder.encode("admin123")); 
             admin.setRoles(Set.of(adminRole, clientRole));
-            admin.setEnabled(true);
 
             usuarioRepository.save(admin);
             System.out.println("Usuário ADMIN criado.");

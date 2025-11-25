@@ -8,10 +8,8 @@ import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Empresa;
 import br.com.bancofeira.banco_feira.model.Evento;
-import br.com.bancofeira.banco_feira.model.Inscricao;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.service.EventoService;
-import br.com.bancofeira.banco_feira.service.InscricaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +24,9 @@ import java.util.stream.Collectors;
 public class EventoController {
 
     private final EventoService eventoService;
-    private final InscricaoService inscricaoService;
 
-    public EventoController(EventoService eventoService, InscricaoService inscricaoService) {
+    public EventoController(EventoService eventoService) {
         this.eventoService = eventoService;
-        this.inscricaoService = inscricaoService;
     }
 
     @PostMapping
@@ -62,19 +58,7 @@ public class EventoController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/evento/{eventoId}/me")
-    public ResponseEntity<ApiResponse<CreditosResponseDto>> getMeusCreditosPorEvento(
-            @PathVariable Integer eventoId,
-            @AuthenticationPrincipal Usuario usuarioLogado) {
-
-        Inscricao inscricao = inscricaoService.getMinhaInscricao(eventoId, usuarioLogado);
-
-        CreditosResponseDto creditosDto = new CreditosResponseDto(inscricao.getCreditos());
-
-        ApiResponse<CreditosResponseDto> response = new ApiResponse<>(true, "Saldo do cliente no evento.", creditosDto);
-        return ResponseEntity.ok(response);
-    }
-
+    
     @GetMapping("/{eventoId}/empresas")
     public ResponseEntity<ApiResponse<List<EmpresaResponseDto>>> listarEmpresasDoEvento(@PathVariable Integer eventoId) {
         

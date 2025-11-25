@@ -2,7 +2,6 @@ package br.com.bancofeira.banco_feira.service;
 
 import br.com.bancofeira.banco_feira.model.Empresa;
 import br.com.bancofeira.banco_feira.model.Usuario;
-import br.com.bancofeira.banco_feira.repository.InscricaoRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import br.com.bancofeira.banco_feira.model.Inscricao;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -25,12 +23,6 @@ public class JwtService {
     
     @Value("${jwt.secret}")
     private String secretKey;
-    private InscricaoRepository inscricaoRepository;
-    
-
-    public JwtService(InscricaoRepository inscricaoRepository) {
-        this.inscricaoRepository = inscricaoRepository;
-    }
 
     @SuppressWarnings("deprecation")
     public String generateToken(Usuario usuario) { 
@@ -44,12 +36,6 @@ public class JwtService {
         
         String nome = usuario.getNome();
 
-        List<Inscricao> inscricoes = inscricaoRepository.findByUsuario(usuario);
-
-        List<Integer> idsEventos = inscricoes.stream()
-            .map(inscricao -> inscricao.getEvento().getId()).collect(Collectors.toList());
-
-
         return Jwts.builder()
                 .subject(usuario.getUsername()) 
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -57,7 +43,6 @@ public class JwtService {
                 .claim("nome",nome)
                 .claim("roles", roles)
                 .claim("empresaIds", empresaIds)
-                .claim("idEventos", idsEventos)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

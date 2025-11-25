@@ -1,6 +1,5 @@
 package br.com.bancofeira.banco_feira.dto;
 
-import br.com.bancofeira.banco_feira.model.StatusEmpresa;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,7 +11,6 @@ public class EmpresaResponseDto {
     private String nomeFantasia;
     private String descricaoCurta;
     private BigDecimal creditos;
-    private StatusEmpresa status;
     private LocalDateTime dataCadastro;
     private Integer eventoId;
     private String chaveFuncionario;
@@ -23,7 +21,6 @@ public class EmpresaResponseDto {
         dto.setNomeFantasia(empresa.getNomeFantasia());
         dto.setDescricaoCurta(empresa.getDescricaoCurta());
         dto.setCreditos(empresa.getCreditos());
-        dto.setStatus(empresa.getStatus());
         dto.setDataCadastro(empresa.getDataCadastro());
         if (empresa.getEvento() != null) {
              dto.setEventoId(empresa.getEvento().getId());

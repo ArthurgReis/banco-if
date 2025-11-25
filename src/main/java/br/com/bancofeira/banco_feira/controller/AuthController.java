@@ -32,12 +32,5 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/confirmar")
-    public ResponseEntity<ApiResponse<Void>> confirmarConta(@RequestParam("token") String token) {
-
-        authService.confirmarConta(token);
-        ApiResponse<Void> response = new ApiResponse<>(true, "Conta ativada com sucesso! Você já pode fazer o login.", null);
-        return ResponseEntity.ok(response);
-    }
 
 }

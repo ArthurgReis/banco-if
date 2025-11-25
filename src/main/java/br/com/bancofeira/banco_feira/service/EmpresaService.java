@@ -60,7 +60,6 @@ public class EmpresaService {
         Empresa novaEmpresa = new Empresa();
         novaEmpresa.setNomeFantasia(dto.getNomeFantasia());
         novaEmpresa.setDescricaoCurta(dto.getDescricaoCurta());
-        novaEmpresa.setStatus(StatusEmpresa.APROVADO);
         novaEmpresa.setEvento(evento);
 
         String chaveFunc = UUID.randomUUID().toString().substring(18, 26).toUpperCase();

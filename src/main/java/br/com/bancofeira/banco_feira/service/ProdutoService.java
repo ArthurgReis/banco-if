@@ -32,7 +32,6 @@ public class ProdutoService {
 
     @Transactional
     public Produto criarProduto(Produto produto, Integer empresaId, Usuario usuarioLogado) {
-        @SuppressWarnings("null")
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada com o ID: " + empresaId));
 
