@@ -4,11 +4,11 @@ import br.com.bancofeira.banco_feira.model.Role;
 import br.com.bancofeira.banco_feira.model.Usuario;
 import br.com.bancofeira.banco_feira.repository.RoleRepository;
 import br.com.bancofeira.banco_feira.repository.UsuarioRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Service
@@ -41,22 +41,25 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Configuração crítica: ROLE_CLIENTE não encontrado."));
         usuario.setRoles(Set.of(clientRole));
 
-        Usuario novoUsuario = usuarioRepository.save(usuario);
-
-        
-        return novoUsuario;
+        return usuarioRepository.save(usuario);
     }
+
     public java.util.List<Usuario> listarTodos(){
         return usuarioRepository.findAll();
-
     }
 
-    @SuppressWarnings("null")
     public Usuario buscarPorId(Integer id){
         return usuarioRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
     }
 
+    @Transactional
+    public void alterarSenha(Usuario usuario, String senhaAtual, String senhaNova){
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
+            throw new BadCredentialsException("A senha atual informada está incorreta.");
+        }
 
-    
+        usuario.setSenha(passwordEncoder.encode(senhaNova));
+        usuarioRepository.save(usuario);
+    }
 }

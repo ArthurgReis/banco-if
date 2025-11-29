@@ -1,6 +1,6 @@
 package br.com.bancofeira.banco_feira.controller;
 
-
+import br.com.bancofeira.banco_feira.dto.AlterarSenhaDto;
 import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
 import br.com.bancofeira.banco_feira.model.ApiResponse;
 import br.com.bancofeira.banco_feira.model.Usuario;
@@ -29,7 +29,6 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UsuarioResponseDto>> buscarMeusDados(@AuthenticationPrincipal Usuario usuarioLogado) {
         UsuarioResponseDto usuarioDto = UsuarioResponseDto.fromEntity(usuarioLogado);
@@ -37,4 +36,13 @@ public class UsuarioController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/alterar-senha")
+    public ResponseEntity<ApiResponse<Void>> alterarSenha(@AuthenticationPrincipal Usuario usuarioLogado, 
+                                                          @RequestBody @Valid AlterarSenhaDto dadosSenha) {
+        
+        usuarioService.alterarSenha(usuarioLogado, dadosSenha.getSenhaAtual(), dadosSenha.getSenhaNova());
+
+        ApiResponse<Void> response = new ApiResponse<>(true, "Senha alterada com sucesso!", null);
+        return ResponseEntity.ok(response);
+    }
 }
