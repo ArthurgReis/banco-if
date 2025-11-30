@@ -36,6 +36,11 @@ public class JwtService {
         
         String nome = usuario.getNome();
 
+        List<Integer> eventoIds = usuario.getEmpresas().stream()
+                .map(empresa -> empresa.getEvento().getId())
+                .distinct()
+                .collect(Collectors.toList());
+
         return Jwts.builder()
                 .subject(usuario.getUsername()) 
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -43,6 +48,7 @@ public class JwtService {
                 .claim("nome",nome)
                 .claim("roles", roles)
                 .claim("empresaIds", empresaIds)
+                .claim("eventosIds",eventoIds)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
