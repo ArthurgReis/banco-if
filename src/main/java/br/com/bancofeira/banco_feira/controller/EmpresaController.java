@@ -150,17 +150,35 @@ public class EmpresaController {
             return ResponseEntity.ok(new ApiResponse<>(true, "Cálculo realizado.", simulacao));
         }
 
-        @PostMapping("/venda")
-        public ResponseEntity<ApiResponse<PedidoResponseDto>> realizarVenda(
-                @AuthenticationPrincipal Usuario usuarioLogado,
-                @RequestBody @Valid CheckoutRequestDto checkout) {
+    @PostMapping("/venda")
+    public ResponseEntity<ApiResponse<PedidoResponseDto>> realizarVenda(
+            @AuthenticationPrincipal Usuario usuarioLogado,
+            @RequestBody @Valid CheckoutRequestDto checkout) {
 
-            Pedido pedido = pedidoService.processarVenda(checkout, usuarioLogado);
+        Pedido pedido = pedidoService.processarVenda(checkout, usuarioLogado);
             
-            return ResponseEntity.ok(new ApiResponse<>(
+        return ResponseEntity.ok(new ApiResponse<>(
+            true, 
+            "Venda realizada com sucesso!", 
+            PedidoResponseDto.fromEntity(pedido)
+        ));
+    }
+
+    @GetMapping("/{empresaId}/vendas")
+    public ResponseEntity<ApiResponse<List<PedidoResponseDto>>> historicoVendas(
+        @PathVariable Integer empresaId,
+        @AuthenticationPrincipal Usuario usuarioLogado) {
+
+        List<Pedido> pedidos = pedidoService.listarPedidosPorEmpresa(empresaId, usuarioLogado);
+
+        List<PedidoResponseDto> historicoDto = pedidos.stream()
+                .map(PedidoResponseDto::fromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new ApiResponse<>(
                 true, 
-                "Venda realizada com sucesso!", 
-                PedidoResponseDto.fromEntity(pedido)
-            ));
-        }
+                "Histórico de vendas carregado.", 
+                historicoDto
+        ));
+    }
 }

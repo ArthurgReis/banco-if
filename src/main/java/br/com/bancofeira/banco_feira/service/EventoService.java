@@ -32,9 +32,7 @@ public class EventoService {
         novoEvento.setDataRealizacao(eventoDto.getDataRealizacao());
         novoEvento.setCreditoInicialCliente(eventoDto.getCreditoInicialCliente());
 
-        String chaveCli = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         String chaveEmp = UUID.randomUUID().toString().substring(9, 17).toUpperCase();
-        novoEvento.setChaveCliente(chaveCli);
         novoEvento.setChaveEmpresa(chaveEmp);
 
         return eventoRepository.save(novoEvento);

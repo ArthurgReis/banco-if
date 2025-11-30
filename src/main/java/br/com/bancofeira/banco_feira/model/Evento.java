@@ -28,9 +28,6 @@ public class Evento {
     @Column(name = "data_realizacao")
     private LocalDate dataRealizacao;
 
-    @Column(name = "chave_cliente", nullable = false, unique = true, length = 8)
-    private String chaveCliente;
-
     @Column(name = "chave_empresa", nullable = false, unique = true, length = 8)
     private String chaveEmpresa;
 

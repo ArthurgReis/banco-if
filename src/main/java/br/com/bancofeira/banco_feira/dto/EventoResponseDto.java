@@ -12,7 +12,6 @@ public class EventoResponseDto {
     private String nome;
     private LocalDate dataRealizacao;
     private BigDecimal creditoInicialCliente;
-    private String chaveCliente;
     private String chaveEmpresa;
 
     public static EventoResponseDto fromEntity(Evento evento) {
@@ -22,7 +21,6 @@ public class EventoResponseDto {
         dto.setNome(evento.getNome());
         dto.setDataRealizacao(evento.getDataRealizacao());
         dto.setCreditoInicialCliente(evento.getCreditoInicialCliente());
-        dto.setChaveCliente(evento.getChaveCliente());
         dto.setChaveEmpresa(evento.getChaveEmpresa());
         return dto;
     }
