@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import br.com.bancofeira.banco_feira.model.Evento;
 
 public interface EventoRepository extends JpaRepository<Evento, Integer> {
-    Optional<Evento> findByChaveCliente(String chaveCliente);
     Optional<Evento> findByChaveEmpresa(String chaveEmpresa);
     Optional<Evento> findFirstByOrderByDataRealizacaoDesc();
 }
