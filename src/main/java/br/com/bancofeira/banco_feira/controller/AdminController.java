@@ -3,6 +3,7 @@ package br.com.bancofeira.banco_feira.controller;
 import br.com.bancofeira.banco_feira.dto.AdminEmpresaDetalheDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaRankingDto;
 import br.com.bancofeira.banco_feira.dto.EmpresaResponseDto;
+import br.com.bancofeira.banco_feira.dto.EventoRequestDto;
 import br.com.bancofeira.banco_feira.dto.EventoResponseDto;
 import br.com.bancofeira.banco_feira.dto.UsuarioResponseDto;
 import br.com.bancofeira.banco_feira.exception.ResourceNotFoundException;
@@ -11,9 +12,14 @@ import br.com.bancofeira.banco_feira.repository.EmpresaRepository;
 import br.com.bancofeira.banco_feira.repository.EventoRepository;
 import br.com.bancofeira.banco_feira.service.AdminService;
 import br.com.bancofeira.banco_feira.service.EventoService;
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -101,5 +107,35 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<EventoResponseDto>> atualizarEvento(
+            @PathVariable Integer id,
+            @RequestBody @Valid EventoRequestDto dto) {
+
+        Evento eventoDados = new Evento();
+        eventoDados.setNome(dto.getNome());
+        eventoDados.setDataRealizacao(dto.getDataRealizacao());
+        eventoDados.setCreditoInicialCliente(dto.getCreditoInicialCliente());
+
+        Evento eventoAtualizado = eventoService.atualizarEvento(id, eventoDados);
+
+        return ResponseEntity.ok(new ApiResponse<>(
+                true,
+                "Evento atualizado com sucesso!",
+                EventoResponseDto.fromEntity(eventoAtualizado)
+        ));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deletarEvento(@PathVariable Integer id) {
+        
+        eventoService.deletarEvento(id);
+
+        return ResponseEntity.ok(new ApiResponse<>(
+                true,
+                "Evento deletado com sucesso!",
+                null
+        ));
+    }
 
 }
